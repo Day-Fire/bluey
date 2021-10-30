@@ -39,6 +39,7 @@ public class Player_Hold : MonoBehaviour
     }
     public void pickUp(GameObject obj)
     {
+        movement.maxspeed /= 2;
         heldObject = obj;
         heldcol = obj.GetComponent<Rigidbody>();
         heldcol.useGravity = false;

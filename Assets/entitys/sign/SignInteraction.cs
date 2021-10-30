@@ -8,7 +8,7 @@ public class SignInteraction : Interactable
     public InteractionType InteractionType = InteractionType.Read;
     public string text;
     public GameObject ui_display;
-
+    public bool isactive = false;
     private void Awake()
     {
         playercontrols = new PlayerControls();
@@ -32,6 +32,14 @@ public class SignInteraction : Interactable
     public override void interact()
     {
         var distext = ui_display.GetComponent<ui_display>();
-        distext.displaytext(text);
+        if (!isactive)
+        {
+            distext.displaytext(text);
+            isactive = true;
+        }
+        else
+        {
+            isactive = false;
+        }
     }
 }
