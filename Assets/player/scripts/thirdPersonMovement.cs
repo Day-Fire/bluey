@@ -7,15 +7,21 @@ public class thirdPersonMovement : MonoBehaviour
     private PlayerControls playercontrols;
 
     public Transform cam;
+    public Transform groundpoint;
     public CharacterController controller;
     public Animator animator;
     public float speed = 6f;
     public float velocity = 1.5f;
+    public float fallvel = 0f;
+    public float gravity = -9.81f;
     public float maxspeed = 12f;
     public float minspeed = 0f;
     public float speedadd = 0f;
     public float turnsmoothtime = 0.1f;
     public bool canroll = true;
+    public float grounddistance = 0.4f;
+    public LayerMask groundMask;
+    public bool isgrounded = false;
     Vector3 movedir;
     float turnsmoothvel;
     private void Awake()
@@ -54,11 +60,18 @@ public class thirdPersonMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        isgrounded = Physics.CheckBox(groundpoint.position, groundpoint.lossyScale/2, groundpoint.rotation, groundMask);
         animator.SetFloat("speed",speed);
         Vector2 playerinput = playercontrols.normal.move.ReadValue<Vector2>();
         Vector3 dir = new Vector3(playerinput.y, 0, -playerinput.x);
 
-        
+        if(isgrounded && fallvel != -2)
+        {
+            fallvel = -5f;
+        }
+
+        fallvel += gravity * Time.deltaTime;
+        controller.Move(new Vector3(0,fallvel* Time.deltaTime,0));
 
         if (dir.magnitude >= 0.1)
         {
