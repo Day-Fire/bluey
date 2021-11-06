@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class damage_touch : MonoBehaviour
 {
-
+    int damageontouch = 1;
     void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.tag == "Player")
         {
-            col.gameObject.GetComponent<>
+            Player_stats stats = col.gameObject.GetComponent<Player_stats>();
+            stats.hurt(damageontouch);
         }
     }
 }
