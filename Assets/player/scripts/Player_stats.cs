@@ -6,9 +6,10 @@ public class Player_stats : MonoBehaviour
 {
     [SerializeField]
     private int health = 3;
-    public float itime = 2f;
+    public float itime = 1f;
     private float curitime = 0f;
     public healthbar healthbar;
+    public thirdPersonMovement movement;
     
     public void hurt(int damage)
     {
