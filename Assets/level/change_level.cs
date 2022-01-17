@@ -8,15 +8,18 @@ public class change_level : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("entered");
-        Debug.Log(other.gameObject.name);
-        Transform playertransform = other.gameObject.GetComponent<Transform>();
-        playertransform = playerspawn;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        //Debug.Log("entered");
+        // Debug.Log(other.gameObject.name);
+        if (other.gameObject.name == "player")
+        {
+            Transform playertransform = other.GetComponent<Transform>();
+            thirdPersonMovement movement = other.GetComponent<thirdPersonMovement>();
+            //movement.canMove = false;
+            playertransform.position = playerspawn.position;
+            playertransform.rotation = playerspawn.rotation;
+            Physics.SyncTransforms();
+            //Debug.Log("player: " + playertransform.position);
+            //Debug.Log("expect: " + playerspawn.position);
+        }
     }
 }

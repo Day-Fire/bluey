@@ -5,6 +5,10 @@ using UnityEngine;
 public class playerinteraction : MonoBehaviour
 {
     private PlayerControls playercontrols;
+
+    [SerializeField]
+    private Player_stats Stats;
+
     public float interactiondistance;
     public TMPro.TextMeshProUGUI interactiontext;
 
@@ -42,12 +46,15 @@ public class playerinteraction : MonoBehaviour
                 succsesfulhit = true;
             }
         }
-        
+
         if (!succsesfulhit)
         {
-            interactiontext.text = "";
+            interactiontext.text = Stats.curitem.getName();
+            if (playercontrols.normal.Action.triggered)
+            {
+                Stats.curitem.use();
+            }
         }
-        
     }
 
     void handleInteraction(Interactable interactable)

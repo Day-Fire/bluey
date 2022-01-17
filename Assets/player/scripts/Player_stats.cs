@@ -10,7 +10,15 @@ public class Player_stats : MonoBehaviour
     private float curitime = 0f;
     public healthbar healthbar;
     public thirdPersonMovement movement;
+
+    [SerializeField]
+    private bool[] items;
+
+    [SerializeField]
+    private Item[] keyitems;
+    public Item curitem;
     
+
     public void hurt(int damage)
     {
         if (curitime == 0)

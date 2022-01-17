@@ -9,8 +9,9 @@ public class Player_Hold : MonoBehaviour
     public thirdPersonMovement movement;
     public GameObject holdpoint;
     public GameObject putPoint;
+
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         if (heldObject != null)
         {
