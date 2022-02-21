@@ -10,7 +10,7 @@ public class playerinteraction : MonoBehaviour
     private Player_stats Stats;
 
     public float interactiondistance;
-    public TMPro.TextMeshProUGUI interactiontext;
+    //public TMPro.TextMeshProUGUI interactiontext;
 
     private void Awake()
     {
@@ -42,14 +42,14 @@ public class playerinteraction : MonoBehaviour
                 {
                     handleInteraction(interactable);
                 }
-                interactiontext.text = interactable.getName();
+                //interactiontext.text = interactable.getName();
                 succsesfulhit = true;
             }
         }
 
         if (!succsesfulhit)
         {
-            interactiontext.text = Stats.curitem.getName();
+            //interactiontext.text = Stats.curitem.getName();
             if (playercontrols.normal.Action.triggered)
             {
                 Stats.curitem.use();

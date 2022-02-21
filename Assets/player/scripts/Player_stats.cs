@@ -8,7 +8,7 @@ public class Player_stats : MonoBehaviour
     private int health = 3;
     public float itime = 1f;
     private float curitime = 0f;
-    public healthbar healthbar;
+   // public healthbar healthbar;
     public thirdPersonMovement movement;
 
     [SerializeField]
@@ -35,6 +35,6 @@ public class Player_stats : MonoBehaviour
     {
         curitime -= 1 * Time.deltaTime;
         curitime = Mathf.Max(0,curitime);
-        healthbar.SetHealth(health);
+        //healthbar.SetHealth(health);
     }
 }
