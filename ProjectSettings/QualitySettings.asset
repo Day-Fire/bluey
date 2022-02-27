@@ -4,7 +4,7 @@
 QualitySettings:
   m_ObjectHideFlags: 0
   serializedVersion: 5
-  m_CurrentQuality: 3
+  m_CurrentQuality: 6
   m_QualitySettings:
   - serializedVersion: 2
     name: Very Low
@@ -233,7 +233,7 @@ QualitySettings:
     shadowNearPlaneOffset: 0
     shadowCascade2Split: 0.33333334
     shadowCascade4Split: {x: 0.06173448, y: 0.19999997, z: 0.46666664}
-    shadowmaskMode: 1
+    shadowmaskMode: 0
     skinWeights: 4
     textureQuality: 0
     anisotropicTextures: 2

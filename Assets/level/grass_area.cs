@@ -15,7 +15,7 @@ public class grass_area : MonoBehaviour
         {
             Vector3 position = new Vector3(Random.Range(-(col.size.x / 2), col.size.x / 2), 0, Random.Range(-(col.size.z / 2), col.size.z / 2));
             RaycastHit hit;
-            if (Physics.Raycast(transform.position + position, Vector3.down, out hit, layerMask))
+            if (Physics.Raycast(transform.position + position, Vector3.down, out hit, Mathf.Infinity, layerMask))
             {
                 Instantiate(grass, hit.point, Quaternion.EulerAngles(hit.normal));
             }
