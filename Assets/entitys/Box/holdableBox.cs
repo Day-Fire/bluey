@@ -6,8 +6,7 @@ public class holdableBox : Interactable
 {
     private PlayerControls playercontrols;
     public InteractionType InteractionType = InteractionType.Hold;
-    public Player_Hold holdS;
-    private bool held = false;
+    private Player_Hold holdS;
 
     private void Awake()
     {
@@ -26,7 +25,6 @@ public class holdableBox : Interactable
 
     private void Start()
     {
-        playercontrols.normal.Action.started += _ => PutDown();
     }
 
     public override string getName()
@@ -34,21 +32,10 @@ public class holdableBox : Interactable
         return "hold";
     }
 
-    public override void interact()
+    public override void interact(GameObject player)
     {
-        if (!held)
-        {
-            holdS.pickUp(gameObject);
-            held = true;
-        }
-    }
-    public void PutDown()
-    {
-        if (held)
-        {
-            holdS.setDown();
-            held = false;
-        }
+        holdS = player.GetComponent<Player_Hold>();
+        holdS.pickUp(gameObject);
     }
 
 }

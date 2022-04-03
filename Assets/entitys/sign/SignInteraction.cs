@@ -9,6 +9,8 @@ public class SignInteraction : Interactable
     public string text;
     public GameObject ui_display;
     public bool isactive = false;
+    public thirdPersonMovement movement;
+
     private void Awake()
     {
         playercontrols = new PlayerControls();
@@ -29,9 +31,13 @@ public class SignInteraction : Interactable
         return "Read";
     }
 
-    public override void interact()
+    public override void interact(GameObject player)
     {
-        var distext = ui_display.GetComponent<ui_display>();
+        ui_display distext = ui_display.GetComponent<ui_display>();
+        Debug.Log(player.GetComponent<thirdPersonMovement>());
+        {
+            movement = player.GetComponent<thirdPersonMovement>();
+        }
         if (!isactive)
         {
             distext.displaytext(text);
@@ -41,5 +47,6 @@ public class SignInteraction : Interactable
         {
             isactive = false;
         }
+        movement.canMove = !isactive;
     }
 }

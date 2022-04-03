@@ -49,6 +49,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""item_use"",
+                    ""type"": ""Value"",
+                    ""id"": ""741a7931-d64d-4d33-afda-62c0df23ecbc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -132,7 +140,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""3325df75-e8f4-458a-bb25-1ca3eeb5f630"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""controller"",
@@ -178,9 +186,31 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""id"": ""20db01a5-0629-4db8-b0ad-55dd48a164a3"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""InvertVector2(invertY=false)"",
                     ""groups"": ""controller"",
                     ""action"": ""look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3cd06799-5e19-4e5b-a90d-741964ad6331"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""keeb"",
+                    ""action"": ""item_use"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3b10e493-31ed-421c-9e49-0683cc56074e"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""controller"",
+                    ""action"": ""item_use"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -223,6 +253,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_normal_Action = m_normal.FindAction("Action", throwIfNotFound: true);
         m_normal_roll = m_normal.FindAction("roll", throwIfNotFound: true);
         m_normal_look = m_normal.FindAction("look", throwIfNotFound: true);
+        m_normal_item_use = m_normal.FindAction("item_use", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -276,6 +307,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_normal_Action;
     private readonly InputAction m_normal_roll;
     private readonly InputAction m_normal_look;
+    private readonly InputAction m_normal_item_use;
     public struct NormalActions
     {
         private @PlayerControls m_Wrapper;
@@ -284,6 +316,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Action => m_Wrapper.m_normal_Action;
         public InputAction @roll => m_Wrapper.m_normal_roll;
         public InputAction @look => m_Wrapper.m_normal_look;
+        public InputAction @item_use => m_Wrapper.m_normal_item_use;
         public InputActionMap Get() { return m_Wrapper.m_normal; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -305,6 +338,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @look.started -= m_Wrapper.m_NormalActionsCallbackInterface.OnLook;
                 @look.performed -= m_Wrapper.m_NormalActionsCallbackInterface.OnLook;
                 @look.canceled -= m_Wrapper.m_NormalActionsCallbackInterface.OnLook;
+                @item_use.started -= m_Wrapper.m_NormalActionsCallbackInterface.OnItem_use;
+                @item_use.performed -= m_Wrapper.m_NormalActionsCallbackInterface.OnItem_use;
+                @item_use.canceled -= m_Wrapper.m_NormalActionsCallbackInterface.OnItem_use;
             }
             m_Wrapper.m_NormalActionsCallbackInterface = instance;
             if (instance != null)
@@ -321,6 +357,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @look.started += instance.OnLook;
                 @look.performed += instance.OnLook;
                 @look.canceled += instance.OnLook;
+                @item_use.started += instance.OnItem_use;
+                @item_use.performed += instance.OnItem_use;
+                @item_use.canceled += instance.OnItem_use;
             }
         }
     }
@@ -349,5 +388,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnAction(InputAction.CallbackContext context);
         void OnRoll(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+        void OnItem_use(InputAction.CallbackContext context);
     }
 }

@@ -9,6 +9,9 @@ public class playerinteraction : MonoBehaviour
     [SerializeField]
     private Player_stats Stats;
 
+    [SerializeField]
+    private thirdPersonMovement movement;
+
     public float interactiondistance;
     public TMPro.TextMeshProUGUI interactiontext;
 
@@ -36,7 +39,7 @@ public class playerinteraction : MonoBehaviour
         {
             Interactable interactable = hit.collider.GetComponent<Interactable>();
 
-            if (interactable!= null)
+            if (interactable != null)
             {
                 if (playercontrols.normal.Action.triggered)
                 {
@@ -49,7 +52,15 @@ public class playerinteraction : MonoBehaviour
 
         if (!succsesfulhit)
         {
-            interactiontext.text = "";
+            if (movement.canroll)
+            {
+                interactiontext.text = "roll";
+            }
+            if (playercontrols.normal.Action.triggered)
+            {
+                movement.canMove = true;
+                movement.roll();
+            }
         }
     }
 
@@ -58,10 +69,10 @@ public class playerinteraction : MonoBehaviour
         switch (interactable.interactiontype)
         {
             case Interactable.InteractionType.Hold:
-                interactable.interact();
+                interactable.interact(gameObject);
                 break;
             case Interactable.InteractionType.Read:
-                interactable.interact();
+                interactable.interact(gameObject);
                 break;
             default:
                 Debug.LogError("interaction type not found");

@@ -13,5 +13,5 @@ public abstract class Interactable : MonoBehaviour
     public InteractionType interactiontype;
 
     public abstract string getName();
-    public abstract void interact();
+    public abstract void interact(GameObject player);
 }
