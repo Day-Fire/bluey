@@ -58,7 +58,7 @@ public class playerinteraction : MonoBehaviour
             }
             if (playercontrols.normal.Action.triggered)
             {
-                movement.canMove = true;
+                movement.canWalk = true;
                 movement.roll();
             }
         }

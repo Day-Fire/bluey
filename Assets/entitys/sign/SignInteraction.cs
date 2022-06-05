@@ -47,6 +47,6 @@ public class SignInteraction : Interactable
         {
             isactive = false;
         }
-        movement.canMove = !isactive;
+        movement.canWalk = !isactive;
     }
 }

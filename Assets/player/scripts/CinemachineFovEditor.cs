@@ -6,6 +6,7 @@ using Cinemachine;
 public class CinemachineFovEditor : MonoBehaviour
 {
     private CinemachineFreeLook cam;
+    private SettingsManager Settings;
     public float baseFOV;
     public float EffectSpeed;
     private float FOV;
@@ -14,6 +15,7 @@ public class CinemachineFovEditor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Settings = GameObject.Find("Settings manager").GetComponent<SettingsManager>();
         cam = gameObject.GetComponent<CinemachineFreeLook>();
         cam.m_CommonLens = true;
         cam.m_Lens.FieldOfView = baseFOV;
@@ -23,7 +25,7 @@ public class CinemachineFovEditor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        wantedFOV = baseFOV + FOVmods;
+        wantedFOV = (baseFOV + Settings.FoV) + FOVmods * Settings.FoVScale;
         FOV = Mathf.Lerp(FOV, wantedFOV, EffectSpeed);
         cam.m_Lens.FieldOfView = FOV;
     }

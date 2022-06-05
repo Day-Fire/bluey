@@ -12,6 +12,7 @@ public class thirdPersonMovement : MonoBehaviour
     public Transform groundpoint;
     public CharacterController controller;
     public Animator animator;
+
     public float speed = 6f;
     public float velocity = 1.5f;
     public float fallvel = 0f;
@@ -19,21 +20,28 @@ public class thirdPersonMovement : MonoBehaviour
     public float maxspeed = 12f;
     public float minspeed = 0f;
     public float speedadd = 0f;
+
     public float turnsmoothtime = 0.1f;
-    public bool canroll = true;
     public float grounddistance = 0.4f;
-    public LayerMask groundMask;
-    public bool isgrounded = false;
+    Vector3 oldEulerAngles;
+    float turnsmoothvel;
+
     Vector3 movedir;
     public Vector3 additionalforces;
-    float turnsmoothvel;
-    Vector3 oldEulerAngles;
+
+    public LayerMask groundMask;
+    public bool isgrounded = false;
+
     bool isSpining = false;
     float spintime = 0f;
-    public bool canMove = true;
+
+    public bool canroll = true;
+    public bool canWalk = true;
+
     public bool isSleding = false;
     public float sledSpeed = 16f;
     public float sledSpeedMax = 20f;
+
     public Transform sledRaycast;
     public float sledRayDist;
     public ParticleSystem wind;
@@ -60,9 +68,9 @@ public class thirdPersonMovement : MonoBehaviour
     
     public void roll()
     {
-        if (canroll && canMove && !isSleding)
+        if (canroll && canWalk && !isSleding)
         {
-            Debug.Log("lol: " + canroll + " :" + canMove);
+            Debug.Log("lol: " + canroll + " :" + canWalk);
             animator.SetTrigger("roll");
             canroll = false;
         }
@@ -92,7 +100,7 @@ public class thirdPersonMovement : MonoBehaviour
         animator.SetFloat("speed",speed);
         animator.SetBool("spinn",isSpining);
         Vector2 playerinput;
-        if (canMove)
+        if (canWalk)
         {
             playerinput = playercontrols.normal.move.ReadValue<Vector2>();
         }

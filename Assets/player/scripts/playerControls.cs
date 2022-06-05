@@ -57,6 +57,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""menu"",
+                    ""type"": ""Button"",
+                    ""id"": ""b4120524-fd24-4fc5-8cd2-571928a283cf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -213,6 +221,28 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""item_use"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""01cead5b-3124-46c0-ac02-e3f16a99a10b"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""controller"",
+                    ""action"": ""menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dbf2665b-190f-4b05-9235-b12b62f30ddb"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""keeb"",
+                    ""action"": ""menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -254,6 +284,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_normal_roll = m_normal.FindAction("roll", throwIfNotFound: true);
         m_normal_look = m_normal.FindAction("look", throwIfNotFound: true);
         m_normal_item_use = m_normal.FindAction("item_use", throwIfNotFound: true);
+        m_normal_menu = m_normal.FindAction("menu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -308,6 +339,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_normal_roll;
     private readonly InputAction m_normal_look;
     private readonly InputAction m_normal_item_use;
+    private readonly InputAction m_normal_menu;
     public struct NormalActions
     {
         private @PlayerControls m_Wrapper;
@@ -317,6 +349,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @roll => m_Wrapper.m_normal_roll;
         public InputAction @look => m_Wrapper.m_normal_look;
         public InputAction @item_use => m_Wrapper.m_normal_item_use;
+        public InputAction @menu => m_Wrapper.m_normal_menu;
         public InputActionMap Get() { return m_Wrapper.m_normal; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -341,6 +374,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @item_use.started -= m_Wrapper.m_NormalActionsCallbackInterface.OnItem_use;
                 @item_use.performed -= m_Wrapper.m_NormalActionsCallbackInterface.OnItem_use;
                 @item_use.canceled -= m_Wrapper.m_NormalActionsCallbackInterface.OnItem_use;
+                @menu.started -= m_Wrapper.m_NormalActionsCallbackInterface.OnMenu;
+                @menu.performed -= m_Wrapper.m_NormalActionsCallbackInterface.OnMenu;
+                @menu.canceled -= m_Wrapper.m_NormalActionsCallbackInterface.OnMenu;
             }
             m_Wrapper.m_NormalActionsCallbackInterface = instance;
             if (instance != null)
@@ -360,6 +396,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @item_use.started += instance.OnItem_use;
                 @item_use.performed += instance.OnItem_use;
                 @item_use.canceled += instance.OnItem_use;
+                @menu.started += instance.OnMenu;
+                @menu.performed += instance.OnMenu;
+                @menu.canceled += instance.OnMenu;
             }
         }
     }
@@ -389,5 +428,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnRoll(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnItem_use(InputAction.CallbackContext context);
+        void OnMenu(InputAction.CallbackContext context);
     }
 }

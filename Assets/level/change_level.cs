@@ -14,7 +14,7 @@ public class change_level : MonoBehaviour
         {
             Transform playertransform = other.GetComponent<Transform>();
             thirdPersonMovement movement = other.GetComponent<thirdPersonMovement>();
-            //movement.canMove = false;
+            //movement.canWalk = false;
             playertransform.position = playerspawn.position;
             playertransform.rotation = playerspawn.rotation;
             Physics.SyncTransforms();
