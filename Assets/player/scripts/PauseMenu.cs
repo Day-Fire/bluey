@@ -44,7 +44,7 @@ public class PauseMenu : MonoBehaviour
         {
             Time.timeScale = 0;
             Particle.Play();
-            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.lockState = CursorLockMode.None;
         }
         else
         {

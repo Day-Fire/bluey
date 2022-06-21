@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class playerinteraction : MonoBehaviour
 {
-    private PlayerControls playercontrols;
+    private PlayerInput playercontrols;
 
     [SerializeField]
     private Player_stats Stats;
@@ -17,17 +18,7 @@ public class playerinteraction : MonoBehaviour
 
     private void Awake()
     {
-        playercontrols = new PlayerControls();
-    }
-
-    private void OnEnable()
-    {
-        playercontrols.Enable();
-    }
-
-    private void OnDisable()
-    {
-        playercontrols.Disable();
+        playercontrols = gameObject.GetComponent<PlayerInput>();
     }
 
     void Update()
@@ -41,7 +32,7 @@ public class playerinteraction : MonoBehaviour
 
             if (interactable != null)
             {
-                if (playercontrols.normal.Action.triggered)
+                if (playercontrols.actions["Action"].triggered)
                 {
                     handleInteraction(interactable);
                 }
@@ -56,7 +47,7 @@ public class playerinteraction : MonoBehaviour
             {
                 interactiontext.text = "roll";
             }
-            if (playercontrols.normal.Action.triggered)
+            if (playercontrols.actions["Action"].triggered)
             {
                 movement.canWalk = true;
                 movement.roll();

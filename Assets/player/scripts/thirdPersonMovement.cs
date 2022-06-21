@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Cinemachine;
 
 public class thirdPersonMovement : MonoBehaviour
 {
-    private PlayerControls playercontrols;
+    public PlayerInput playercontrols;
 
     public Transform camTrnsfm;
     public CinemachineFovEditor Fov;
@@ -48,17 +49,7 @@ public class thirdPersonMovement : MonoBehaviour
 
     private void Awake()
     {
-        playercontrols = new PlayerControls();
-    }
-
-    private void OnEnable()
-    {
-        playercontrols.Enable();
-    }
-
-    private void OnDisable()
-    {
-        playercontrols.Disable();
+        playercontrols = gameObject.GetComponent<PlayerInput>();
     }
 
     private void Start()
@@ -102,7 +93,7 @@ public class thirdPersonMovement : MonoBehaviour
         Vector2 playerinput;
         if (canWalk)
         {
-            playerinput = playercontrols.normal.move.ReadValue<Vector2>();
+            playerinput = playercontrols.actions["move"].ReadValue<Vector2>();
         }
         else
         {

@@ -16,12 +16,12 @@ public class SettingsManager : MonoBehaviour
     public void ChangeFoVScale(float NewFovScale)
     {
         FoVScale = NewFovScale/100;
-        Debug.Log("NFS: "+ FoVScale);
+        //Debug.Log("NFS: "+ FoVScale);
     }
     public void ChangeFoV(float NewFov)
     {
         FoV = NewFov;
-        Debug.Log("NFoV: " + FoV);
+        //Debug.Log("NFoV: " + FoV);
     }
 
     public void toggleFullscreen(bool NewFullscreen)
@@ -29,4 +29,10 @@ public class SettingsManager : MonoBehaviour
         FullScreen = NewFullscreen;
         Screen.fullScreen = NewFullscreen;
     }
+
+    public void invertX(bool ori)
+    {
+
+    }
+
 }
