@@ -9,6 +9,6 @@ public class ControlsEditor : MonoBehaviour
 
     public void invertX()
     {
-        Debug.Log(look.processors);
+        look.AddBinding("<Gamepad>/leftStick").WithProcessor("invertVector2(invertX=false)");
     }
 }
