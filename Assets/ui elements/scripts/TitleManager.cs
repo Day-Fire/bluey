@@ -6,57 +6,49 @@ using TMPro;
 
 public class TitleManager : MonoBehaviour
 {
-    public ButtonManager[] btns;
+    public GameObject[] saveButtons;
+    public GameObject[] mainButtons;
+    public GameObject[] infoButtons;
 
     public Image btn;
-    public Button btno;
-    public TextMeshProUGUI oof;
-    public Image btn2;
-    public Button btno2;
-    public TextMeshProUGUI oof2;
-    public bool isVis;
-    private float opacity = 1f; 
+    public int state;
 
     public void pressStart()
     {
-        Debug.Log("oof");
-        isVis = false;
+        state = 1;
     }
 
-    private void moveSaves()
+    public void selectSave()
     {
-        foreach (ButtonManager btn in btns)
-        {
-            btn.isActive = true;
-        }
+        state = 2;
     }
 
     private void Update()
     {
-        if (isVis)
-        {
-            btno.interactable = true;
-            btn.color = new Color(255, 255, 255, Mathf.Lerp(btn.color.a, 0.32f, 0.05f));
-            oof.color = new Color(oof.color.r, oof.color.g, oof.color.b, Mathf.Lerp(oof.color.a, 1, 0.03f));
-
-            btno2.interactable = true;
-            btn2.color = new Color(255, 255, 255, Mathf.Lerp(btn2.color.a, 0.32f, 0.05f));
-            oof2.color = new Color(oof2.color.r, oof2.color.g, oof2.color.b, Mathf.Lerp(oof2.color.a, 1, 0.03f));
+        switch (state) {
+            case 0:
+                changeActivationOfGroup(mainButtons, true);
+                changeActivationOfGroup(saveButtons, false);
+                changeActivationOfGroup(infoButtons, false);
+                break;
+            case 1:
+                changeActivationOfGroup(mainButtons, false);
+                changeActivationOfGroup(saveButtons, true);
+                changeActivationOfGroup(infoButtons, false);
+                break;
+            case 2:
+                changeActivationOfGroup(mainButtons, false);
+                changeActivationOfGroup(saveButtons, false);
+                changeActivationOfGroup(infoButtons, true);
+                break;
         }
-        else
-        {
-            btno.interactable = false;
-            btn.color = new Color(255, 255, 255, Mathf.Lerp(btn.color.a, 0, 0.12f));
-            oof.color = new Color(oof.color.r, oof.color.g, oof.color.b, Mathf.Lerp(oof.color.a, 0, 0.12f));
+    }
 
-            btno2.interactable = false;
-            btn2.color = new Color(255, 255, 255, Mathf.Lerp(btn2.color.a, 0, 0.12f));
-            oof2.color = new Color(oof2.color.r, oof2.color.g, oof2.color.b, Mathf.Lerp(oof2.color.a, 0, 0.12f));
-        }
-
-        if(btn.color.a < 0.1)
+    public void changeActivationOfGroup(GameObject[] btns, bool isactive)
+    {
+        foreach (GameObject btn in btns)
         {
-            moveSaves();
+            btn.GetComponent<ButtonManager>().isActive = isactive;
         }
     }
 }

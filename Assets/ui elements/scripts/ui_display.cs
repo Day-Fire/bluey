@@ -1,17 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class ui_display : MonoBehaviour
 {
     private PlayerControls playercontrols;
-    public TMPro.TextMeshProUGUI textdisp;
-    public bool displaying = false;
-    public GameObject ui;
+    public TextMeshProUGUI MainTextDisp;
+    public bool IsVisible;
+    public GameObject UI;
+    public int Page;
 
     private void Awake()
     {
         playercontrols = new PlayerControls();
+        DontDestroyOnLoad(gameObject);
     }
 
     private void OnEnable()
@@ -27,25 +31,24 @@ public class ui_display : MonoBehaviour
     void Start()
     {
         playercontrols.normal.Action.performed += _ => interacttext();
-        ui.SetActive(false);
     }
 
-    public void displaytext(string text)
+    //called by outside objects to display text
+    public void displaytext(string text, string[] options, GameObject returnObj)
     {
-        if (!displaying)
+        if (!IsVisible)
         {
-            ui.SetActive(true);
-            textdisp.text = text;
-            displaying = true;
+            MainTextDisp.text = text;
+            IsVisible = true;
         }
     }
 
+    //called internaly to get player interaction
     void interacttext()
     {
-        if (displaying)
+        if (IsVisible)
         {
-           ui.SetActive(false);
-            displaying = false;
+            IsVisible = false;
         }
     }
 }
