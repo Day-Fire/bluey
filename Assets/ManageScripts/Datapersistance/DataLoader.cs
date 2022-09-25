@@ -9,6 +9,11 @@ public static class DataLoader
     public static void save(string path, int saveslot, GameData gameData)
     {
         BinaryFormatter formatter = new BinaryFormatter();
+        if (!File.Exists(path))
+        {
+            Debug.LogError("save folder not found in " + path+ " ... Creating path!");
+            Directory.CreateDirectory(path);
+        }
         path = path + "/data" + saveslot + ".Blu";
 
         FileStream stream = new FileStream(path, FileMode.Create);

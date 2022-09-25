@@ -18837,7 +18837,6 @@ MonoBehaviour:
   interactiontype: 0
   InteractionType: 1
   text: press y to sled, and press b to interact with stuff/roll
-  ui_display: {fileID: 1253700432}
   isactive: 0
   movement: {fileID: 1598034713}
 --- !u!64 &368926733
@@ -53948,7 +53947,6 @@ MonoBehaviour:
   interactiontype: 0
   InteractionType: 1
   text: RE_IMPLIMENTED!!!!!!!!!!!!!!!!!!!!!!!111!!1!!1
-  ui_display: {fileID: 1253700432}
   isactive: 0
   movement: {fileID: 1598034713}
 --- !u!4 &1315022438 stripped
@@ -55101,10 +55099,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb5fe9ab9d5167428ca60e8248777e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MainTextDisp: {fileID: 0}
-  IsVisible: 0
-  UI: {fileID: 0}
-  Page: 0
 --- !u!1001 &1354660810
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -40,7 +40,7 @@ public class SavePoint : Interactable
         }
         if (!isactive)
         {
-            distext.displaytext(text);
+            //distext.displaytext(text);
             isactive = true;
         }
         else

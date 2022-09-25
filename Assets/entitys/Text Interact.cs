@@ -2,17 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TextInteract : MonoBehaviour
+public abstract class TextInteract : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public enum InteractionType
     {
-        
+        // use if just needing a read of text
+        Text,
+        // use if options are going to appear
+        Options
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public InteractionType interactiontype;
+    public abstract void callback(int page, int optionChoice, bool finished);
 }

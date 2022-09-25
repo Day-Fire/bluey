@@ -8,14 +8,13 @@ public class ui_display : MonoBehaviour
 {
     private PlayerControls playercontrols;
     public TextMeshProUGUI MainTextDisp;
-    public bool IsVisible;
+    public bool isVisible;
     public GameObject UI;
     public int Page;
 
     private void Awake()
     {
         playercontrols = new PlayerControls();
-        DontDestroyOnLoad(gameObject);
     }
 
     private void OnEnable()
@@ -33,22 +32,44 @@ public class ui_display : MonoBehaviour
         playercontrols.normal.Action.performed += _ => interacttext();
     }
 
-    //called by outside objects to display text
-    public void displaytext(string text, string[] options, GameObject returnObj)
+    public void Update()
     {
-        if (!IsVisible)
+        UI.SetActive(isVisible);
+    }
+
+    //called by outside objects to start a display text chain
+    public void startDisplaytext(string text, string[] options, TextInteract returnObj)
+    {
+        MainTextDisp.text = text;
+
+        if (!isVisible)
         {
-            MainTextDisp.text = text;
-            IsVisible = true;
+            isVisible = true;
+        }
+    }
+
+    public void endDisplayText()
+    {
+
+    }
+
+    //called by outside objects to display text without a chain
+    public void displaytext(string text, string[] options)
+    {
+        MainTextDisp.text = text;
+
+        if (!isVisible)
+        {
+            isVisible = true;
         }
     }
 
     //called internaly to get player interaction
     void interacttext()
     {
-        if (IsVisible)
+        if (isVisible)
         {
-            IsVisible = false;
+            isVisible = false;
         }
     }
 }
