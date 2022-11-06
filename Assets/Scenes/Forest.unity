@@ -18837,9 +18837,14 @@ MonoBehaviour:
   interactiontype: 0
   InteractionType: 1
   text: press y to sled, and press b to interact with stuff/roll
-  ui_display: {fileID: 1253700432}
+  options:
+  - 
+  - 
+  - 
+  - 
   isactive: 0
   movement: {fileID: 1598034713}
+  uidis: {fileID: 0}
 --- !u!64 &368926733
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -53948,9 +53953,14 @@ MonoBehaviour:
   interactiontype: 0
   InteractionType: 1
   text: RE_IMPLIMENTED!!!!!!!!!!!!!!!!!!!!!!!111!!1!!1
-  ui_display: {fileID: 1253700432}
+  options:
+  - 
+  - 
+  - 
+  - 
   isactive: 0
   movement: {fileID: 1598034713}
+  uidis: {fileID: 1353861504}
 --- !u!4 &1315022438 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f953873d1f94af344b096a207dca7baa, type: 3}
@@ -55101,9 +55111,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb5fe9ab9d5167428ca60e8248777e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MainTextDisp: {fileID: 0}
-  IsVisible: 0
-  UI: {fileID: 0}
+  MainTextDisp: {fileID: 1570822474}
+  isVisible: 0
+  UI: {fileID: 1253700432}
   Page: 0
 --- !u!1001 &1354660810
 PrefabInstance:
