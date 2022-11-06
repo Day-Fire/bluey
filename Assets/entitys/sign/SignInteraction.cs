@@ -4,26 +4,10 @@ using UnityEngine;
 
 public class SignInteraction : Interactable
 {
-    private PlayerControls playercontrols;
     public InteractionType InteractionType = InteractionType.Read;
     public string text;
     public bool isactive = false;
     public thirdPersonMovement movement;
-
-    private void Awake()
-    {
-        playercontrols = new PlayerControls();
-    }
-
-    private void OnEnable()
-    {
-        playercontrols.Enable();
-    }
-
-    private void OnDisable()
-    {
-        playercontrols.Disable();
-    }
 
     public override string getName()
     {
@@ -32,16 +16,19 @@ public class SignInteraction : Interactable
 
     public override void interact(GameObject player)
     {
-        movement = player.GetComponent<thirdPersonMovement>();
         if (!isactive)
         {
-            //ui_display.displaytext(text, new string[0]);
+            ui_display.displaytext(text);
+            movement = player.GetComponent<thirdPersonMovement>();
+            movement.canWalk = false;
             isactive = true;
         }
         else
         {
+            ui_display.hidetext();
+            movement = player.GetComponent<thirdPersonMovement>();
+            movement.canWalk = true;
             isactive = false;
         }
-        movement.canWalk = !isactive;
     }
 }

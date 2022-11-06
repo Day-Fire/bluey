@@ -61,7 +61,7 @@ public class thirdPersonMovement : MonoBehaviour
     {
         if (canroll && canWalk && !isSleding)
         {
-            Debug.Log("lol: " + canroll + " :" + canWalk);
+            //Debug.Log("lol: " + canroll + " :" + canWalk);
             animator.SetTrigger("roll");
             canroll = false;
         }

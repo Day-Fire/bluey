@@ -66,6 +66,7 @@ public class playerinteraction : MonoBehaviour
                 interactable.interact(gameObject);
                 break;
             default:
+                interactable.interact(gameObject);
                 Debug.LogError("interaction type not found");
                 break;
         }

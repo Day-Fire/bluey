@@ -6,70 +6,35 @@ using TMPro;
 
 public class ui_display : MonoBehaviour
 {
-    private PlayerControls playercontrols;
-    public TextMeshProUGUI MainTextDisp;
-    public bool isVisible;
-    public GameObject UI;
-    public int Page;
+    public static TextMeshProUGUI MainTextDisp;
+    public static GameObject UI;
 
-    private void Awake()
+    public void Start()
     {
-        playercontrols = new PlayerControls();
+        UI = GetComponentInChildren<RawImage>().gameObject;
+        MainTextDisp = GetComponentInChildren<TextMeshProUGUI>();
+        UI.SetActive(false);
     }
 
-    private void OnEnable()
-    {
-        playercontrols.Enable();
-    }
-
-    private void OnDisable()
-    {
-        playercontrols.Disable();
-    }
-
-    void Start()
-    {
-        playercontrols.normal.Action.performed += _ => interacttext();
-    }
-
-    public void Update()
-    {
-        UI.SetActive(isVisible);
-    }
-
-    //called by outside objects to start a display text chain
-    public void startDisplaytext(string text, string[] options, TextInteract returnObj)
+    //called by outside objects to display text
+    public static void displaytext(string text)
     {
         MainTextDisp.text = text;
 
-        if (!isVisible)
-        {
-            isVisible = true;
-        }
+        UI.SetActive(true);
     }
 
-    public void endDisplayText()
-    {
-
-    }
-
-    //called by outside objects to display text without a chain
-    public void displaytext(string text, string[] options)
+    public static void displaytextandopt(string text, string[] options)
     {
         MainTextDisp.text = text;
 
-        if (!isVisible)
-        {
-            isVisible = true;
-        }
+        UI.SetActive(true);
     }
 
-    //called internaly to get player interaction
-    void interacttext()
+    public static void hidetext()
     {
-        if (isVisible)
-        {
-            isVisible = false;
-        }
+        MainTextDisp.text = "";
+
+        UI.SetActive(false);
     }
 }
