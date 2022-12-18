@@ -43,6 +43,7 @@ public class playerinteraction : MonoBehaviour
 
         if (!succsesfulhit)
         {
+            /*
             if (movement.canroll)
             {
                 interactiontext.text = "roll";
@@ -52,6 +53,7 @@ public class playerinteraction : MonoBehaviour
                 movement.canWalk = true;
                 movement.roll();
             }
+            */
         }
     }
 

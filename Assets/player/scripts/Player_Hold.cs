@@ -39,13 +39,13 @@ public class Player_Hold : MonoBehaviour
     {
         if (heldObject != null)
         {
-            movement.canroll = false;
+            //movement.canroll = false;
             heldObject.transform.position = holdpoint.transform.position;
             heldObject.transform.rotation = holdpoint.transform.rotation;
         }
         else
         {
-            movement.canroll = true;
+            //movement.canroll = true;
         }
     }
     public GameObject getPutPoint()

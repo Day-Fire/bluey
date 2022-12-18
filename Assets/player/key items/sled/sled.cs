@@ -9,6 +9,7 @@ public class sled : Item
     private thirdPersonMovement player;
     public override void use()
     {
+        /*
         if (player.isSleding == false)
         {
             player.isSleding = true;
@@ -16,5 +17,6 @@ public class sled : Item
             player.sledSpeed = player.sledSpeedMax * 0.75f;
             player.animator.SetTrigger("sled");
         }
+        */
     }
 }

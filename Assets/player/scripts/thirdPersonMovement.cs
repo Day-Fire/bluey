@@ -8,17 +8,33 @@ public class thirdPersonMovement : MonoBehaviour
 {
     public PlayerInput playercontrols;
 
-    public Transform camTrnsfm;
+    public Transform cameraTransform;
     public CinemachineFovEditor Fov;
     public Transform groundpoint;
     public CharacterController controller;
     public Animator animator;
 
-    public float speed = 6f;
+    enum PlayerState
+    {
+        idle,
+        walk,
+        run,
+        spin,
+        sled,
+        roll,
+        stopped
+    }
+    [SerializeField]
+    private PlayerState state = PlayerState.idle;
+    // Create a new dictionary of strings, with string keys.
+    //
+    Dictionary<PlayerState,PlayerState[]> stateTransistions = new Dictionary<PlayerState, PlayerState[]>();
+
+    public float speed = 10f;
     public float velocity = 1.5f;
     public float fallvel = 0f;
     public float gravity = -9.81f;
-    public float maxspeed = 12f;
+    public float maxspeed = 50f;
     public float minspeed = 0f;
     public float speedadd = 0f;
 
@@ -33,13 +49,8 @@ public class thirdPersonMovement : MonoBehaviour
     public LayerMask groundMask;
     public bool isgrounded = false;
 
-    bool isSpining = false;
     float spintime = 0f;
 
-    public bool canroll = true;
-    public bool canWalk = true;
-
-    public bool isSleding = false;
     public float sledSpeed = 16f;
     public float sledSpeedMax = 20f;
 
@@ -50,6 +61,24 @@ public class thirdPersonMovement : MonoBehaviour
     private void Awake()
     {
         playercontrols = gameObject.GetComponent<PlayerInput>();
+
+        PlayerState[] temp = { PlayerState.idle, PlayerState.roll, PlayerState.sled, PlayerState.stopped, PlayerState.spin, PlayerState.run };
+        stateTransistions.Add(PlayerState.walk, temp);
+
+        PlayerState[] temp2 = { PlayerState.walk, PlayerState.roll, PlayerState.sled, PlayerState.stopped };
+        stateTransistions.Add(PlayerState.idle, temp2);
+
+        PlayerState[] temp3 = { PlayerState.idle };
+        stateTransistions.Add(PlayerState.stopped, temp3);
+
+        stateTransistions.Add(PlayerState.spin, temp3);
+
+        stateTransistions.Add(PlayerState.sled, temp3);
+
+        PlayerState[] temp4 = { PlayerState.idle, PlayerState.run };
+        stateTransistions.Add(PlayerState.run, temp4);
+
+        stateTransistions.Add(PlayerState.roll, temp4);
     }
 
     private void Start()
@@ -59,11 +88,12 @@ public class thirdPersonMovement : MonoBehaviour
     
     public void roll()
     {
-        if (canroll && canWalk && !isSleding)
+        Debug.Log("state:" + state);
+        if ((int)state < (int)PlayerState.sled)
         {
-            Debug.Log("lol: " + canroll + " :" + canWalk);
+            state = PlayerState.roll;
+            Debug.Log("Roolll!");
             animator.SetTrigger("roll");
-            canroll = false;
         }
     }
 
@@ -74,67 +104,54 @@ public class thirdPersonMovement : MonoBehaviour
 
     private void endroll()
     {
-        //canroll = true;
+        state = PlayerState.idle;
     }
 
     private void endSled()
     {
+        Debug.Log("Roolll!");
         animator.SetBool("sledend",false);
-        canroll = true;
-        isSleding = false;
+        state = PlayerState.idle;
     }
 
     // Update is called once per frame
     void Update()
     {
-        isgrounded = Physics.CheckBox(groundpoint.position, groundpoint.lossyScale/2, groundpoint.rotation, groundMask);
+        //check if player is on the ground
+        check_ground();
+
+        //interface with the animator and set varibles/play animations
         animator.SetFloat("speed",speed);
-        animator.SetBool("spinn",isSpining);
-        Vector2 playerinput;
-        if (canWalk)
-        {
-            playerinput = playercontrols.actions["move"].ReadValue<Vector2>();
-        }
-        else
-        {
-            playerinput = Vector2.zero;
-        }
-        Vector3 dir = new Vector3(playerinput.y, 0, -playerinput.x);
 
-        if(isgrounded && fallvel != -5)
-        {
-            fallvel = -5f;
-        }
+        //get player input direction for walking/running
+        Vector3 dir = get_input();
 
-        fallvel += gravity * Time.deltaTime;
-        controller.Move(new Vector3(0,fallvel* Time.deltaTime,0));
-
+        //seting the playerstate
+        
         if (dir.magnitude >= 0.1)
         {
-            speed += velocity;
-            speed = Mathf.Clamp(speed, minspeed, maxspeed);
-            speedadd -= velocity;
-            speedadd = Mathf.Clamp(speedadd, 0, 20);
-            float targetangle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg + camTrnsfm.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetangle, ref turnsmoothvel, turnsmoothtime);
-            transform.rotation = Quaternion.Euler(0f,angle, 0f);
-            movedir = Quaternion.Euler(0f, targetangle, 0f) * Vector3.left;
-            if (!isSleding)
-            {
-                controller.Move(movedir * (speed + speedadd) * Time.deltaTime);
-            }
+            changeState(PlayerState.walk);
         }
-        else if (speed >= 0.1 || speedadd >= 0.1)
+        if (speed >= 0.1 || speedadd >= 0.1)
         {
-            speed -= velocity;
-            speed = Mathf.Clamp(speed, minspeed, maxspeed);
-            if (!isSleding)
-            {
-                controller.Move(movedir * (speed + speedadd) * Time.deltaTime);
-            }
-            speedadd -= velocity/2;
-            speedadd = Mathf.Clamp(speedadd, 0, 20);
+            changeState(PlayerState.idle);
         }
+
+        //gravity 
+        preform_Gravity();
+
+        switch (state)
+        {
+            case PlayerState.walk:
+                preform_Walk(dir);
+                break;
+            case PlayerState.idle:
+                preform_idle();
+                break;
+        }
+
+        //sleding
+        /*
         if (!isSleding) 
         {
             controller.Move(new Vector3(movedir.x * additionalforces.x, movedir.y, movedir.z * additionalforces.z) * Time.deltaTime);
@@ -177,30 +194,109 @@ public class thirdPersonMovement : MonoBehaviour
                 animator.SetBool("sledend",true);
             }
         }
+        */
+        //spining
+        
+        oldEulerAngles = gameObject.transform.rotation.eulerAngles;
+        if (check_spin())
+        {
+            animator.SetBool("spinn", true);
+            maxspeed /= 5;
+        }
+        else
+        {
+            animator.SetBool("spinn", false);
+            maxspeed = 12;
+        }
+    }
 
+    private void changeState(PlayerState newState )
+    {
+        PlayerState[] found;
+        bool changed = false;
+        if (stateTransistions.TryGetValue(state, out found))
+        {
+            foreach(PlayerState x in found)
+            {
+                if(x == newState)
+                {
+                    changed = true;
+                    state = newState;
+                }
+            }
+        }
+        if (changed)
+        {
+            Debug.Log("playerstate was changed");
+        }
+        else
+        {
+            Debug.Log("playerstate unchanged");
+        }
+    }
+
+    private void check_ground()
+    {
+        isgrounded = Physics.CheckBox(groundpoint.position, groundpoint.lossyScale / 2, groundpoint.rotation, groundMask);
+    }
+
+    private void preform_Gravity()
+    {
+        //snaps player to ground 
+        if (isgrounded && fallvel != -5)
+        {
+            fallvel = -5f;
+        }
+
+        // gravity when not on ground
+        fallvel += gravity * Time.deltaTime;
+        controller.Move(new Vector3(0, fallvel * Time.deltaTime, 0));
+    }
+
+    private void preform_Walk(Vector3 dir)
+    {
+        speed += velocity;
+        speed = Mathf.Clamp(speed, minspeed, maxspeed);
+        speedadd -= velocity;
+        speedadd = Mathf.Clamp(speedadd, 0, 20);
+        float targetangle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
+        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetangle, ref turnsmoothvel, turnsmoothtime);
+        transform.rotation = Quaternion.Euler(0f, angle, 0f);
+        movedir = Quaternion.Euler(0f, targetangle, 0f) * Vector3.left;
+
+        controller.Move(movedir * (speed + speedadd) * Time.deltaTime);
+    }
+
+    private void preform_idle()
+    {
+        speed -= velocity;
+        speed = Mathf.Clamp(speed, minspeed, maxspeed);
+        controller.Move(movedir * (speed + speedadd) * Time.deltaTime);
+        speedadd -= velocity / 2;
+        speedadd = Mathf.Clamp(speedadd, 0, 20);
+    }
+
+    private Vector3 get_input()
+    {
+        Vector2 playerinput;
+        playerinput = playercontrols.actions["move"].ReadValue<Vector2>();
+        return new Vector3(playerinput.y, 0, -playerinput.x);
+    }
+    private bool check_spin()
+    {
         if (Mathf.Abs(oldEulerAngles.y - gameObject.transform.rotation.eulerAngles.y) > 15)
         {
             spintime += 0.5f * Time.deltaTime;
         }
         if (Mathf.Abs(oldEulerAngles.y - gameObject.transform.rotation.eulerAngles.y) < 7)
         {
-            isSpining = false;
-            canroll = true;
+            return false;
         }
         if (spintime > 1f)
         {
             spintime = 0;
-            isSpining = true;
-            canroll = false;
+            return true;
         }
-        oldEulerAngles = gameObject.transform.rotation.eulerAngles;
-        if (isSpining)
-        {
-            maxspeed /= 5;
-        }
-        else
-        {
-            maxspeed = 12;
-        }
+        return false;
     }
 }

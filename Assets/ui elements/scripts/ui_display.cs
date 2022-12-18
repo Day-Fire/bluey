@@ -34,7 +34,7 @@ public class ui_display : MonoBehaviour
     }
 
     //called by outside objects to display text
-    public void displaytext(string text, string[] options, GameObject returnObj)
+    public void displaytext(string text)
     {
         if (!IsVisible)
         {
