@@ -7,13 +7,11 @@ using Cinemachine;
 public class thirdPersonMovement : MonoBehaviour
 {
     public PlayerInput playercontrols;
-
     public Transform cameraTransform;
     public CinemachineFovEditor Fov;
     public Transform groundpoint;
     public CharacterController controller;
     public Animator animator;
-
     enum PlayerState
     {
         idle,
@@ -24,19 +22,19 @@ public class thirdPersonMovement : MonoBehaviour
         roll,
         stopped
     }
+    [Space(10)]
     [SerializeField]
     private PlayerState state = PlayerState.idle;
     // Create a new dictionary of strings, with string keys.
     //
     Dictionary<PlayerState,PlayerState[]> stateTransistions = new Dictionary<PlayerState, PlayerState[]>();
-
+    [Space(10)]
     public float speed = 10f;
     public float velocity = 1.5f;
     public float fallvel = 0f;
     public float gravity = -9.81f;
     public float maxspeed = 50f;
     public float minspeed = 0f;
-    public float speedadd = 0f;
 
     public float turnsmoothtime = 0.1f;
     public float grounddistance = 0.4f;
@@ -48,16 +46,19 @@ public class thirdPersonMovement : MonoBehaviour
 
     public LayerMask groundMask;
     public bool isgrounded = false;
-
+    [Space(10)]
+    Vector3 rolldir;
+    public float rollspeed;
+    [Space(10)]
     float spintime = 0f;
-
+    [Space(10)]
     public float sledSpeed = 16f;
     public float sledSpeedMax = 20f;
 
     public Transform sledRaycast;
     public float sledRayDist;
     public ParticleSystem wind;
-
+    
     private void Awake()
     {
         playercontrols = gameObject.GetComponent<PlayerInput>();
@@ -73,9 +74,9 @@ public class thirdPersonMovement : MonoBehaviour
 
         stateTransistions.Add(PlayerState.spin, temp3);
 
-        stateTransistions.Add(PlayerState.sled, temp3);
-
         PlayerState[] temp4 = { PlayerState.idle, PlayerState.run };
+        stateTransistions.Add(PlayerState.sled, temp4);
+
         stateTransistions.Add(PlayerState.run, temp4);
 
         stateTransistions.Add(PlayerState.roll, temp4);
@@ -88,23 +89,19 @@ public class thirdPersonMovement : MonoBehaviour
     
     public void roll()
     {
-        Debug.Log("state:" + state);
-        if ((int)state < (int)PlayerState.sled)
+        //Debug.Log("state:" + state);
+        if (state != PlayerState.roll)
         {
-            state = PlayerState.roll;
-            Debug.Log("Roolll!");
-            animator.SetTrigger("roll");
+            animator.SetTrigger("rollTrg");
         }
-    }
-
-    private void midroll()
-    {
-        speedadd += 20;
+        changeState(PlayerState.roll);
+        rolldir = get_input();
+        //Debug.Log("Roolll!");
     }
 
     private void endroll()
     {
-        state = PlayerState.idle;
+        changeState(PlayerState.idle);
     }
 
     private void endSled()
@@ -126,13 +123,14 @@ public class thirdPersonMovement : MonoBehaviour
         //get player input direction for walking/running
         Vector3 dir = get_input();
 
+        //Debug.Log(state + " current state");
+
         //seting the playerstate
-        
         if (dir.magnitude >= 0.1)
         {
             changeState(PlayerState.walk);
         }
-        if (speed >= 0.1 || speedadd >= 0.1)
+        else
         {
             changeState(PlayerState.idle);
         }
@@ -147,6 +145,9 @@ public class thirdPersonMovement : MonoBehaviour
                 break;
             case PlayerState.idle:
                 preform_idle();
+                break;
+            case PlayerState.roll:
+                preform_roll();
                 break;
         }
 
@@ -195,19 +196,6 @@ public class thirdPersonMovement : MonoBehaviour
             }
         }
         */
-        //spining
-        
-        oldEulerAngles = gameObject.transform.rotation.eulerAngles;
-        if (check_spin())
-        {
-            animator.SetBool("spinn", true);
-            maxspeed /= 5;
-        }
-        else
-        {
-            animator.SetBool("spinn", false);
-            maxspeed = 12;
-        }
     }
 
     private void changeState(PlayerState newState )
@@ -257,23 +245,33 @@ public class thirdPersonMovement : MonoBehaviour
     {
         speed += velocity;
         speed = Mathf.Clamp(speed, minspeed, maxspeed);
-        speedadd -= velocity;
-        speedadd = Mathf.Clamp(speedadd, 0, 20);
         float targetangle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetangle, ref turnsmoothvel, turnsmoothtime);
         transform.rotation = Quaternion.Euler(0f, angle, 0f);
         movedir = Quaternion.Euler(0f, targetangle, 0f) * Vector3.left;
 
-        controller.Move(movedir * (speed + speedadd) * Time.deltaTime);
+        controller.Move(movedir * (speed) * Time.deltaTime);
     }
 
     private void preform_idle()
     {
         speed -= velocity;
         speed = Mathf.Clamp(speed, minspeed, maxspeed);
-        controller.Move(movedir * (speed + speedadd) * Time.deltaTime);
-        speedadd -= velocity / 2;
-        speedadd = Mathf.Clamp(speedadd, 0, 20);
+        controller.Move(movedir * (speed) * Time.deltaTime);
+    }
+
+    private void preform_roll()
+    {
+        if(rolldir == Vector3.zero)
+        {
+            Debug.Log("ioiff");
+            rolldir = new Vector3(1,0,0);
+        }
+        float targetangle = Mathf.Atan2(rolldir.x, rolldir.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
+        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetangle, ref turnsmoothvel, turnsmoothtime);
+        transform.rotation = Quaternion.Euler(0f, angle, 0f);
+        movedir = Quaternion.Euler(0f, targetangle, 0f) * Vector3.left;
+        controller.Move(movedir * (rollspeed) * Time.deltaTime);
     }
 
     private Vector3 get_input()

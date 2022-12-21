@@ -80544,7 +80544,7 @@ PrefabInstance:
       objectReference: {fileID: 514351342}
     - target: {fileID: 7667533063572694431, guid: 84da8725da4a1bd48b6e2f757b3568b5, type: 3}
       propertyPath: speed
-      value: 7.8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7667533063572694431, guid: 84da8725da4a1bd48b6e2f757b3568b5, type: 3}
       propertyPath: gravity
@@ -80552,7 +80552,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7667533063572694431, guid: 84da8725da4a1bd48b6e2f757b3568b5, type: 3}
       propertyPath: maxspeed
-      value: 41.75
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7667533063572694431, guid: 84da8725da4a1bd48b6e2f757b3568b5, type: 3}
       propertyPath: camTrnsfm
@@ -80561,6 +80561,10 @@ PrefabInstance:
     - target: {fileID: 7667533063572694431, guid: 84da8725da4a1bd48b6e2f757b3568b5, type: 3}
       propertyPath: isSleding
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7667533063572694431, guid: 84da8725da4a1bd48b6e2f757b3568b5, type: 3}
+      propertyPath: rollspeed
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 7667533063572694431, guid: 84da8725da4a1bd48b6e2f757b3568b5, type: 3}
       propertyPath: sledRayDist
