@@ -143,7 +143,7 @@ public class thirdPersonMovement : MonoBehaviour
         //set player rotated to the ground
         RaycastHit hit;
         Physics.Raycast(transform.position, Vector3.down, out hit, 2f, groundMask);
-        gfx.rotation = Quaternion.Lerp(gfx.rotation, Quaternion.FromToRotation(gfx.up, hit.normal) * gfx.rotation, 0.2f);
+        gfx.rotation = Quaternion.Lerp(gfx.rotation, Quaternion.FromToRotation(transform.up, hit.normal) * gfx.rotation, 0.2f);
 
         //get player input direction for walking/running
         Vector3 dir = get_input();
@@ -171,10 +171,10 @@ public class thirdPersonMovement : MonoBehaviour
         switch (state)
         {
             case PlayerState.walk:
-                preform_walk(dir);
+                preform_walk(dir, hit);
                 break;
             case PlayerState.idle:
-                preform_idle();
+                preform_idle(hit);
                 break;
             case PlayerState.roll:
                 preform_roll();
@@ -183,6 +183,7 @@ public class thirdPersonMovement : MonoBehaviour
                 preform_sled(dir);
                 break;
             case PlayerState.spin:
+                preform_walk(dir, hit);
                 preform_spin();
                 break;
         }
@@ -268,7 +269,7 @@ public class thirdPersonMovement : MonoBehaviour
         controller.Move(new Vector3(0, fallvel * Time.deltaTime, 0));
     }
 
-    private void preform_walk(Vector3 dir)
+    private void preform_walk(Vector3 dir, RaycastHit norm)
     {
         speed += velocity;
         speed = Mathf.Clamp(speed, minspeed, maxspeed);
@@ -277,14 +278,17 @@ public class thirdPersonMovement : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, angle, 0f);
         movedir = Quaternion.Euler(0f, targetangle, 0f) * Vector3.left;
 
-        controller.Move(movedir * (speed) * Time.deltaTime);
+        Vector3 move = (Vector3.ProjectOnPlane(movedir, norm.normal) * (speed) * Time.deltaTime);
+        controller.Move(move);
+
     }
 
-    private void preform_idle()
+    private void preform_idle(RaycastHit norm)
     {
         speed -= velocity;
         speed = Mathf.Clamp(speed, minspeed, maxspeed);
-        controller.Move(movedir * (speed) * Time.deltaTime);
+        Vector3 move = (Vector3.ProjectOnPlane(movedir, norm.normal) * (speed) * Time.deltaTime);
+        controller.Move(move);
     }
 
     private void preform_roll()
@@ -365,7 +369,7 @@ public class thirdPersonMovement : MonoBehaviour
         {
             spintime += 2 * Time.deltaTime;
         }
-        else if (Mathf.Floor(Vector3.Angle(dir.normalized, prevdir.normalized)) > 90 || Mathf.Floor(Vector3.Angle(dir.normalized, prevdir.normalized)) < 0)
+        else if (Mathf.Floor(Vector3.Angle(dir.normalized, prevdir.normalized)) > 90 )
         {
             spintime = 0;
         }
@@ -375,8 +379,8 @@ public class thirdPersonMovement : MonoBehaviour
         }
 
         prevdir = dir;
-        spintime = Mathf.Clamp(spintime, 0, 1.2f);
-        if (spintime >= 0.8f)
+        spintime = Mathf.Clamp(spintime, 0, 0.5f);
+        if (spintime >= 0.4f)
         {
             return true;
         }
