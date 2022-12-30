@@ -2,29 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 public class Player_stats : MonoBehaviour
 {
-    //input--
-    private PlayerControls playercontrols;
-
-    private void Awake()
-    {
-        playercontrols = new PlayerControls();
-    }
-
-    private void OnEnable()
-    {
-        playercontrols.Enable();
-    }
-
-    private void OnDisable()
-    {
-        playercontrols.Disable();
-    }
-    private void Start()
-    {
-        playercontrols.normal.item_use.performed += ctx => useItem(ctx.control.layout, 0);
-    }
 
     //Health---
     [SerializeField]
@@ -35,14 +15,12 @@ public class Player_stats : MonoBehaviour
     [SerializeField]
     private Item[] items;
 
-    public Item topEquip;
-    public Item midEquip;
-    public Item btmEquip;
+    public Item Equip;
 
-    public RawImage topImage;
-    public RawImage midImage;
-    public RawImage btmImage;
+    public RawImage Image;
 
+    public double holdtime;
+    public InputAction.CallbackContext startctx;
     public void hurt(int damage)
     {
         Debug.Log("oow");
@@ -55,35 +33,24 @@ public class Player_stats : MonoBehaviour
     {
         healthbar.setHealth(health);
 
-        topImage.texture = topEquip.icon;
-        midImage.texture = midEquip.icon;
-        btmImage.texture = btmEquip.icon;
+        Image.texture = Equip.icon;
     }
-    void useItem(string cont, int index)
+    public void useItem(InputAction.CallbackContext context)
     {
-        //lil note context is equal to button if pressed by a controller and key if on a keyboard (;
-        if (cont == "Button")
+        if (context.started)
         {
-            switch (index)
+            startctx = context;
+        }
+        Debug.Log("yes");
+        if (context.canceled == true)
+        {
+            Debug.Log("im");
+            Debug.Log(startctx.duration);
+            if (startctx.duration < holdtime)
             {
-                case 0:
-                    topEquip.use();
-                    break;
-                case 1:
-                    midEquip.use();
-                    break;
-                case 2:
-                    btmEquip.use();
-                    break;
+                Equip.use();
+                Debug.Log("stupid");
             }
-        }
-        else if(cont == "Key")
-        { 
-            
-        }
-        else
-        {
-            Debug.Log(cont + " is not supported yet ):");
         }
     }
 }

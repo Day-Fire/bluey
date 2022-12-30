@@ -12,7 +12,7 @@ public class thirdPersonMovement : MonoBehaviour
     public Transform groundpoint;
     public CharacterController controller;
     public Animator animator;
-    enum PlayerState
+    public enum PlayerState
     {
         idle,
         walk,
@@ -20,11 +20,13 @@ public class thirdPersonMovement : MonoBehaviour
         spin,
         sled,
         roll,
-        stopped
     }
     [Space(10)]
     [SerializeField]
     private PlayerState state = PlayerState.idle;
+    private PlayerState prevstate = PlayerState.idle;
+    [SerializeField]
+    private bool canChangeState = true;
     // Create a new dictionary of strings, with string keys.
     //
     Dictionary<PlayerState,PlayerState[]> stateTransistions = new Dictionary<PlayerState, PlayerState[]>();
@@ -51,9 +53,14 @@ public class thirdPersonMovement : MonoBehaviour
     public float rollspeed;
     [Space(10)]
     float spintime = 0f;
+    Queue<float> spinamt = new Queue<float>();
+    Vector3 prevdir;
     [Space(10)]
-    public float sledSpeed = 16f;
-    public float sledSpeedMax = 20f;
+    public float sledSpeed = 0f;
+    public float sledStartSpeed = 16f;
+    public Transform gfx;
+    public float slopeAceMod;
+    public float slopeFriction;
 
     public Transform sledRaycast;
     public float sledRayDist;
@@ -63,18 +70,18 @@ public class thirdPersonMovement : MonoBehaviour
     {
         playercontrols = gameObject.GetComponent<PlayerInput>();
 
-        PlayerState[] temp = { PlayerState.idle, PlayerState.roll, PlayerState.sled, PlayerState.stopped, PlayerState.spin, PlayerState.run };
+        PlayerState[] temp = { PlayerState.idle, PlayerState.roll, PlayerState.sled, PlayerState.spin, PlayerState.run };
         stateTransistions.Add(PlayerState.walk, temp);
 
-        PlayerState[] temp2 = { PlayerState.walk, PlayerState.roll, PlayerState.sled, PlayerState.stopped };
+        PlayerState[] temp2 = { PlayerState.walk, PlayerState.roll, PlayerState.sled };
         stateTransistions.Add(PlayerState.idle, temp2);
 
         PlayerState[] temp3 = { PlayerState.idle };
-        stateTransistions.Add(PlayerState.stopped, temp3);
 
         stateTransistions.Add(PlayerState.spin, temp3);
 
         PlayerState[] temp4 = { PlayerState.idle, PlayerState.run };
+
         stateTransistions.Add(PlayerState.sled, temp4);
 
         stateTransistions.Add(PlayerState.run, temp4);
@@ -95,20 +102,24 @@ public class thirdPersonMovement : MonoBehaviour
             animator.SetTrigger("rollTrg");
         }
         changeState(PlayerState.roll);
+        canChangeState = false;
         rolldir = get_input();
         //Debug.Log("Roolll!");
     }
 
     private void endroll()
     {
+        canChangeState = true;
         changeState(PlayerState.idle);
     }
 
     private void endSled()
     {
-        Debug.Log("Roolll!");
-        animator.SetBool("sledend",false);
-        state = PlayerState.idle;
+        sledSpeed = 3;
+        Fov.resetFov();
+        wind.Stop();
+        canChangeState = true;
+        Debug.Log(changeState(PlayerState.idle));
     }
 
     // Update is called once per frame
@@ -119,6 +130,20 @@ public class thirdPersonMovement : MonoBehaviour
 
         //interface with the animator and set varibles/play animations
         animator.SetFloat("speed",speed);
+        animator.SetFloat("sledspeed", sledSpeed);
+        if(state == PlayerState.spin)
+        {
+            animator.SetBool("spin", true);
+        }
+        else
+        {
+            animator.SetBool("spin", false);
+        }
+
+        //set player rotated to the ground
+        RaycastHit hit;
+        Physics.Raycast(transform.position, Vector3.down, out hit, 2f, groundMask);
+        gfx.rotation = Quaternion.Lerp(gfx.rotation, Quaternion.FromToRotation(gfx.up, hit.normal) * gfx.rotation, 0.2f);
 
         //get player input direction for walking/running
         Vector3 dir = get_input();
@@ -135,13 +160,18 @@ public class thirdPersonMovement : MonoBehaviour
             changeState(PlayerState.idle);
         }
 
+        if (check_spin(dir))
+        {
+            changeState(PlayerState.spin);
+        }
+
         //gravity 
         preform_Gravity();
 
         switch (state)
         {
             case PlayerState.walk:
-                preform_Walk(dir);
+                preform_walk(dir);
                 break;
             case PlayerState.idle:
                 preform_idle();
@@ -149,80 +179,77 @@ public class thirdPersonMovement : MonoBehaviour
             case PlayerState.roll:
                 preform_roll();
                 break;
+            case PlayerState.sled:
+                preform_sled(dir);
+                break;
+            case PlayerState.spin:
+                preform_spin();
+                break;
         }
 
-        //sleding
-        /*
-        if (!isSleding) 
-        {
-            controller.Move(new Vector3(movedir.x * additionalforces.x, movedir.y, movedir.z * additionalforces.z) * Time.deltaTime);
-        }
-        else
-        {
-            controller.Move(movedir * (sledSpeed) * Time.deltaTime);
-            RaycastHit hit;
-            if (Physics.Raycast(sledRaycast.position, Vector3.down, out hit, sledRayDist))
-            {
-                //Debug.DrawLine(sledRaycast.position, sledRaycast.position + Vector3.down * sledRayDist, Color.cyan, 0, true);
-                //Debug.Log("distance: "+ hit.distance);
-                float t = Mathf.InverseLerp(0, sledRayDist, hit.distance);
-                //Debug.Log("inverse lerp: "+ t);
-                sledSpeed += Mathf.Lerp(-30, 30, t) * Time.deltaTime;
-                //Debug.Log("change: "+Mathf.Lerp(-30, 30, t));
-            }
-            else if (Physics.Raycast(sledRaycast.position, Vector3.down, out hit))
-            {
-                sledSpeed += 15;
-            }
-            else
-            {
-                sledSpeed -= 15;
-            }
-            sledSpeed = Mathf.Max(0, sledSpeed);
-            sledSpeed = Mathf.Min(sledSpeed, sledSpeedMax);
-            if(sledSpeed > 25f)
-            {
-                wind.Play();
-                Fov.changeFov(15);
-            }
-            else
-            {
-                Fov.resetFov();
-                wind.Stop();
-            }
-            if (sledSpeed <= 0)
-            {
-                animator.SetBool("sledend",true);
-            }
-        }
-        */
+        prevstate = state;
     }
 
-    private void changeState(PlayerState newState )
+    public bool changeState(PlayerState newState )
     {
-        PlayerState[] found;
         bool changed = false;
-        if (stateTransistions.TryGetValue(state, out found))
+        if (canChangeState)
         {
-            foreach(PlayerState x in found)
+            PlayerState[] found;
+            if (stateTransistions.TryGetValue(state, out found))
             {
-                if(x == newState)
+                foreach (PlayerState x in found)
                 {
-                    changed = true;
-                    state = newState;
+                    if (x == newState)
+                    {
+                        changed = true;
+                        state = newState;
+                    }
                 }
             }
         }
         if (changed)
         {
-            Debug.Log("playerstate was changed");
+            //Debug.Log("playerstate was changed");
+            return true;
         }
         else
         {
-            Debug.Log("playerstate unchanged");
+            return false;
+            //Debug.Log("playerstate unchanged");
         }
     }
 
+    public bool hardSetState(PlayerState newState)
+    {
+        bool changed = false;
+        if (canChangeState)
+        {
+            PlayerState[] found;
+            if (stateTransistions.TryGetValue(state, out found))
+            {
+                foreach (PlayerState x in found)
+                {
+                    if (x == newState)
+                    {
+                        changed = true;
+                        state = newState;
+                    }
+                }
+            }
+        }
+        if (changed)
+        {
+            //Debug.Log("playerstate was changed");
+            canChangeState = false;
+            return true;
+        }
+        else
+        {
+            return false;
+            //Debug.Log("playerstate unchanged");
+        }
+    }
     private void check_ground()
     {
         isgrounded = Physics.CheckBox(groundpoint.position, groundpoint.lossyScale / 2, groundpoint.rotation, groundMask);
@@ -241,7 +268,7 @@ public class thirdPersonMovement : MonoBehaviour
         controller.Move(new Vector3(0, fallvel * Time.deltaTime, 0));
     }
 
-    private void preform_Walk(Vector3 dir)
+    private void preform_walk(Vector3 dir)
     {
         speed += velocity;
         speed = Mathf.Clamp(speed, minspeed, maxspeed);
@@ -262,7 +289,7 @@ public class thirdPersonMovement : MonoBehaviour
 
     private void preform_roll()
     {
-        if(rolldir == Vector3.zero)
+        if(rolldir == new Vector3(0,0,0))
         {
             Debug.Log("ioiff");
             rolldir = new Vector3(1,0,0);
@@ -274,27 +301,86 @@ public class thirdPersonMovement : MonoBehaviour
         controller.Move(movedir * (rollspeed) * Time.deltaTime);
     }
 
+    private void preform_spin()
+    {
+        
+    }
+
+    private void preform_sled(Vector3 dir)
+    {
+        //get slope data
+        RaycastHit hit;
+        Physics.Raycast(transform.position, Vector3.down, out hit, float.MaxValue, groundMask);
+
+        float slopeAngle = Vector3.Angle(transform.forward, hit.normal) - 90;
+
+        if (sledSpeed >= 10)
+        {
+            sledSpeed += ((slopeAngle * slopeAceMod) - slopeFriction) * Time.deltaTime;
+        }
+        else
+        {
+            sledSpeed += ((slopeAngle * slopeAceMod) - slopeFriction/3) * Time.deltaTime;
+        }
+        //move according to sledspeed
+        float targetangle = Mathf.Atan2(1, dir.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
+        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetangle, ref turnsmoothvel, turnsmoothtime);
+
+        transform.rotation = Quaternion.Euler(0f, angle, 0f);
+        movedir = Quaternion.Euler(0f, targetangle, 0f) * Vector3.left;
+
+        controller.Move(Vector3.ProjectOnPlane(movedir, hit.normal) * (sledSpeed) * Time.deltaTime);
+
+        if (sledSpeed > 40f)
+        {
+            wind.Play();
+            Fov.changeFov(15);
+        } 
+        else if (sledSpeed < 15f)
+        {
+            Fov.changeFov(-8);
+        }
+        else
+        {
+            Fov.resetFov();
+            wind.Stop();
+        }
+        if (sledSpeed <= 0)
+        {
+            animator.SetBool("sledend", true);
+            sledSpeed = sledStartSpeed;
+        }
+    }
+
     private Vector3 get_input()
     {
         Vector2 playerinput;
         playerinput = playercontrols.actions["move"].ReadValue<Vector2>();
         return new Vector3(playerinput.y, 0, -playerinput.x);
     }
-    private bool check_spin()
+    private bool check_spin(Vector3 dir)
     {
-        if (Mathf.Abs(oldEulerAngles.y - gameObject.transform.rotation.eulerAngles.y) > 15)
+        //Debug.Log(Mathf.Floor(Vector3.Angle(dir.normalized, prevdir.normalized)));
+        if(Mathf.Floor(Vector3.Angle(dir.normalized, prevdir.normalized)) > 0)
         {
-            spintime += 0.5f * Time.deltaTime;
+            spintime += 2 * Time.deltaTime;
         }
-        if (Mathf.Abs(oldEulerAngles.y - gameObject.transform.rotation.eulerAngles.y) < 7)
-        {
-            return false;
-        }
-        if (spintime > 1f)
+        else if (Mathf.Floor(Vector3.Angle(dir.normalized, prevdir.normalized)) > 90 || Mathf.Floor(Vector3.Angle(dir.normalized, prevdir.normalized)) < 0)
         {
             spintime = 0;
+        }
+        else
+        {
+            spintime -= 0.5f * Time.deltaTime;
+        }
+
+        prevdir = dir;
+        spintime = Mathf.Clamp(spintime, 0, 1.2f);
+        if (spintime >= 0.8f)
+        {
             return true;
         }
+
         return false;
     }
 }

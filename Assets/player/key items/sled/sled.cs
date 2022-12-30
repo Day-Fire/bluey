@@ -9,14 +9,11 @@ public class sled : Item
     private thirdPersonMovement player;
     public override void use()
     {
-        /*
-        if (player.isSleding == false)
+        Debug.Log("loj");
+        if (player.hardSetState(thirdPersonMovement.PlayerState.sled))
         {
-            player.isSleding = true;
-            player.canroll = false;
-            player.sledSpeed = player.sledSpeedMax * 0.75f;
+            player.sledSpeed = player.sledStartSpeed;
             player.animator.SetTrigger("sled");
         }
-        */
     }
 }

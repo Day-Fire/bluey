@@ -52,11 +52,11 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": ""item_use"",
-                    ""type"": ""Value"",
+                    ""type"": ""Button"",
                     ""id"": ""741a7931-d64d-4d33-afda-62c0df23ecbc"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Hold""
                 },
                 {
                     ""name"": ""menu"",
@@ -203,7 +203,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""3cd06799-5e19-4e5b-a90d-741964ad6331"",
-                    ""path"": ""<Keyboard>/f"",
+                    ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""keeb"",
