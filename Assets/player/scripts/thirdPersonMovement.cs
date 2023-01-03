@@ -53,8 +53,15 @@ public class thirdPersonMovement : MonoBehaviour
     public float rollspeed;
     [Space(10)]
     float spintime = 0f;
-    Queue<float> spinamt = new Queue<float>();
+    bool[] keyarray = new bool[4];
+    int spinamt = 0;
     Vector3 prevdir;
+    float startspintime;
+    public float limitspintime;
+    [Space(10)]
+    float sprintTime = 0f;
+    double startSprintTime;
+    public float maxSprintSpeed;
     [Space(10)]
     public float sledSpeed = 0f;
     public float sledStartSpeed = 16f;
@@ -71,10 +78,14 @@ public class thirdPersonMovement : MonoBehaviour
         playercontrols = gameObject.GetComponent<PlayerInput>();
 
         PlayerState[] temp = { PlayerState.idle, PlayerState.roll, PlayerState.sled, PlayerState.spin, PlayerState.run };
+
         stateTransistions.Add(PlayerState.walk, temp);
 
         PlayerState[] temp2 = { PlayerState.walk, PlayerState.roll, PlayerState.sled };
+
         stateTransistions.Add(PlayerState.idle, temp2);
+
+        stateTransistions.Add(PlayerState.run, temp2);
 
         PlayerState[] temp3 = { PlayerState.idle };
 
@@ -83,8 +94,6 @@ public class thirdPersonMovement : MonoBehaviour
         PlayerState[] temp4 = { PlayerState.idle, PlayerState.run };
 
         stateTransistions.Add(PlayerState.sled, temp4);
-
-        stateTransistions.Add(PlayerState.run, temp4);
 
         stateTransistions.Add(PlayerState.roll, temp4);
     }
@@ -96,15 +105,14 @@ public class thirdPersonMovement : MonoBehaviour
     
     public void roll()
     {
-        //Debug.Log("state:" + state);
-        if (state != PlayerState.roll)
+        if (changeState(PlayerState.roll))
         {
             animator.SetTrigger("rollTrg");
+            canChangeState = false;
+            rolldir = get_input();
+            //Debug.Log("Roolll!");
         }
-        changeState(PlayerState.roll);
-        canChangeState = false;
-        rolldir = get_input();
-        //Debug.Log("Roolll!");
+
     }
 
     private void endroll()
@@ -113,6 +121,8 @@ public class thirdPersonMovement : MonoBehaviour
         changeState(PlayerState.idle);
     }
 
+
+
     private void endSled()
     {
         sledSpeed = 3;
@@ -120,6 +130,14 @@ public class thirdPersonMovement : MonoBehaviour
         wind.Stop();
         canChangeState = true;
         Debug.Log(changeState(PlayerState.idle));
+    }
+
+    public void sprint(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            startSprintTime = Time.realtimeSinceStartup;
+        }
     }
 
     // Update is called once per frame
@@ -143,7 +161,8 @@ public class thirdPersonMovement : MonoBehaviour
         //set player rotated to the ground
         RaycastHit hit;
         Physics.Raycast(transform.position, Vector3.down, out hit, 2f, groundMask);
-        gfx.rotation = Quaternion.Lerp(gfx.rotation, Quaternion.FromToRotation(transform.up, hit.normal) * gfx.rotation, 0.2f);
+        gfx.rotation = Quaternion.Lerp(gfx.rotation, Quaternion.FromToRotation(gfx.up, hit.normal) * transform.rotation, 0.2f);
+        
 
         //get player input direction for walking/running
         Vector3 dir = get_input();
@@ -153,7 +172,15 @@ public class thirdPersonMovement : MonoBehaviour
         //seting the playerstate
         if (dir.magnitude >= 0.1)
         {
-            changeState(PlayerState.walk);
+            if(playercontrols.actions["sprint"].ReadValue<float>() == 1)
+            {   
+                changeState(PlayerState.run);
+            }
+            else
+            {
+                animator.SetFloat("sprintSpeed", 1);
+                changeState(PlayerState.walk);
+            }
         }
         else
         {
@@ -183,8 +210,10 @@ public class thirdPersonMovement : MonoBehaviour
                 preform_sled(dir);
                 break;
             case PlayerState.spin:
-                preform_walk(dir, hit);
                 preform_spin();
+                break;
+            case PlayerState.run:
+                preform_run(dir, hit);
                 break;
         }
 
@@ -277,10 +306,33 @@ public class thirdPersonMovement : MonoBehaviour
         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetangle, ref turnsmoothvel, turnsmoothtime);
         transform.rotation = Quaternion.Euler(0f, angle, 0f);
         movedir = Quaternion.Euler(0f, targetangle, 0f) * Vector3.left;
-
+        
         Vector3 move = (Vector3.ProjectOnPlane(movedir, norm.normal) * (speed) * Time.deltaTime);
         controller.Move(move);
 
+        wind.Stop();
+
+    }
+
+    private void preform_run(Vector3 dir, RaycastHit norm)
+    {
+        speed += velocity;
+        speed = Mathf.Clamp(speed, minspeed, maxspeed);
+        float targetangle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
+        float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetangle, ref turnsmoothvel, turnsmoothtime);
+        transform.rotation = Quaternion.Euler(0f, angle, 0f);
+        movedir = Quaternion.Euler(0f, targetangle, 0f) * Vector3.left;
+        sprintTime = Mathf.Min(Mathf.Abs((float)startSprintTime - Time.realtimeSinceStartup), maxSprintSpeed);
+        //Debug.Log(sprintTime);
+        Vector3 move = (Vector3.ProjectOnPlane(movedir, norm.normal) * (speed * (float)sprintTime) * Time.deltaTime);
+        controller.Move(move);
+
+        animator.SetFloat("sprintSpeed", (float)sprintTime);
+
+        if((float)sprintTime >= 3)
+        {            
+            wind.Play();
+        }
     }
 
     private void preform_idle(RaycastHit norm)
@@ -289,6 +341,8 @@ public class thirdPersonMovement : MonoBehaviour
         speed = Mathf.Clamp(speed, minspeed, maxspeed);
         Vector3 move = (Vector3.ProjectOnPlane(movedir, norm.normal) * (speed) * Time.deltaTime);
         controller.Move(move);
+
+        wind.Stop();
     }
 
     private void preform_roll()
@@ -364,12 +418,13 @@ public class thirdPersonMovement : MonoBehaviour
     }
     private bool check_spin(Vector3 dir)
     {
-        //Debug.Log(Mathf.Floor(Vector3.Angle(dir.normalized, prevdir.normalized)));
-        if(Mathf.Floor(Vector3.Angle(dir.normalized, prevdir.normalized)) > 0)
+        if (Mathf.Floor(Vector3.SignedAngle(dir.normalized, prevdir.normalized, Vector3.Cross(dir, prevdir).normalized)) > 0 ||
+            Mathf.Floor(Vector3.SignedAngle(dir.normalized, prevdir.normalized, Vector3.Cross(dir, prevdir).normalized)) < 0)
         {
             spintime += 2 * Time.deltaTime;
         }
-        else if (Mathf.Floor(Vector3.Angle(dir.normalized, prevdir.normalized)) > 90 )
+        else if (Mathf.Floor(Vector3.SignedAngle(dir.normalized, prevdir.normalized, Vector3.Cross(dir, prevdir).normalized)) > 90 ||
+            Mathf.Floor(Vector3.SignedAngle(dir.normalized, prevdir.normalized, Vector3.Cross(dir, prevdir).normalized)) < -90)
         {
             spintime = 0;
         }
@@ -381,6 +436,83 @@ public class thirdPersonMovement : MonoBehaviour
         prevdir = dir;
         spintime = Mathf.Clamp(spintime, 0, 0.5f);
         if (spintime >= 0.4f)
+        {
+            return true;
+        }
+
+        if (dir.x > 0)
+        {
+            // w
+            keyarray[0] = true;
+            startspintime = Time.realtimeSinceStartup;
+        }
+        else if (dir.z > 0 && (keyarray[0] || keyarray[1]))
+        {
+            if (!keyarray[1])
+            {
+                animator.SetFloat("spindir", 1f);
+            }
+            else
+            {
+                animator.SetFloat("spindir", -1f);
+            }
+            // a
+            keyarray[2] = true;
+        }
+        else if (dir.x < 0 && (keyarray[2] || keyarray[3]))
+        {
+            // s
+            keyarray[1] = true;
+        }
+        else if (dir.z < 0 && (keyarray[0] || keyarray[1]))
+        {
+            //d
+            keyarray[3] = true;
+        }
+        else
+        {
+            for (int i = 0; i < keyarray.Length; i++)
+            {
+                keyarray[i] = false;
+            }
+        }
+
+        if (Mathf.Abs(dir.magnitude) == 0)
+        {
+            for (int i = 0; i < keyarray.Length; i++)
+            {
+                keyarray[i] = false;
+            }
+            spinamt = 0;
+        }
+        else
+        {
+            bool alltrue = true;
+            for (int i = 0; i < keyarray.Length; i++)
+            {
+                if(keyarray[i] == false)
+                {
+                    alltrue = false;
+                }
+                    
+            }
+            if (alltrue)
+            {
+                keyarray[0] = false;
+                keyarray[1] = false;
+                keyarray[2] = false;
+                keyarray[3] = false;
+
+                Debug.Log(startspintime - Time.realtimeSinceStartup);
+
+                if (Mathf.Abs(Time.realtimeSinceStartup - startspintime) < limitspintime)
+                {
+                    spinamt++;
+                }
+            }
+        }
+
+        if (spinamt > 2)
         {
             return true;
         }

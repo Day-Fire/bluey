@@ -35,6 +35,7 @@ public class Player_stats : MonoBehaviour
 
         Image.texture = Equip.icon;
     }
+
     public void useItem(InputAction.CallbackContext context)
     {
         if (context.started)

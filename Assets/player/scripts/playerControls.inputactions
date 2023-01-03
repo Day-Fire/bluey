@@ -7,7 +7,7 @@
             "actions": [
                 {
                     "name": "move",
-                    "type": "PassThrough",
+                    "type": "Value",
                     "id": "ce33b729-ddae-408f-bc63-66df48acd3da",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -49,6 +49,14 @@
                     "name": "menu",
                     "type": "Button",
                     "id": "b4120524-fd24-4fc5-8cd2-571928a283cf",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "sprint",
+                    "type": "Button",
+                    "id": "b82a70bc-83fd-44d2-b9c5-bd425da0359e",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -170,7 +178,7 @@
                     "id": "13a57d23-f985-40cc-a9d5-aa40baa11200",
                     "path": "<Mouse>/delta",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "InvertVector2",
                     "groups": "keeb",
                     "action": "look",
                     "isComposite": false,
@@ -228,6 +236,28 @@
                     "processors": "",
                     "groups": "keeb",
                     "action": "menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "532cf680-534c-4f42-85b2-98906e44e3ad",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "controller",
+                    "action": "sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a1ac3b34-3d92-4789-91aa-513725960b8d",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "keeb",
+                    "action": "sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
