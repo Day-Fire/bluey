@@ -13,7 +13,7 @@ public class waveEmissions : MonoBehaviour
 
     private void Start()
     {
-        Orig = gameObject.GetComponent<Renderer>().material.GetColor("_EmissionColor");
+        Orig = gameObject.GetComponent<Renderer>().materials[4].GetColor("_EmissionColor");
     }
 
     // Update is called once per frame
