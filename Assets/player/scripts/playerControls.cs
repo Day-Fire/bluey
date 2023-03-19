@@ -20,7 +20,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
             ""actions"": [
                 {
                     ""name"": ""move"",
-                    ""type"": ""PassThrough"",
+                    ""type"": ""Value"",
                     ""id"": ""ce33b729-ddae-408f-bc63-66df48acd3da"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
@@ -52,16 +52,24 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": ""item_use"",
-                    ""type"": ""Value"",
+                    ""type"": ""Button"",
                     ""id"": ""741a7931-d64d-4d33-afda-62c0df23ecbc"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Hold""
                 },
                 {
                     ""name"": ""menu"",
                     ""type"": ""Button"",
                     ""id"": ""b4120524-fd24-4fc5-8cd2-571928a283cf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""sprint"",
+                    ""type"": ""Button"",
+                    ""id"": ""b82a70bc-83fd-44d2-b9c5-bd425da0359e"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -159,7 +167,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""c2147dfa-52ac-44e7-902f-5124a149476f"",
-                    ""path"": ""<Keyboard>/leftShift"",
+                    ""path"": ""<Keyboard>/r"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""keeb"",
@@ -170,7 +178,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""fa50c126-00e2-44af-bffb-043e369c13d3"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""controller"",
@@ -183,7 +191,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""id"": ""13a57d23-f985-40cc-a9d5-aa40baa11200"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""InvertVector2"",
                     ""groups"": ""keeb"",
                     ""action"": ""look"",
                     ""isComposite"": false,
@@ -203,7 +211,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""3cd06799-5e19-4e5b-a90d-741964ad6331"",
-                    ""path"": ""<Keyboard>/f"",
+                    ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""keeb"",
@@ -241,6 +249,28 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""processors"": """",
                     ""groups"": ""keeb"",
                     ""action"": ""menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""532cf680-534c-4f42-85b2-98906e44e3ad"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""controller"",
+                    ""action"": ""sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a1ac3b34-3d92-4789-91aa-513725960b8d"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""keeb"",
+                    ""action"": ""sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -285,6 +315,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_normal_look = m_normal.FindAction("look", throwIfNotFound: true);
         m_normal_item_use = m_normal.FindAction("item_use", throwIfNotFound: true);
         m_normal_menu = m_normal.FindAction("menu", throwIfNotFound: true);
+        m_normal_sprint = m_normal.FindAction("sprint", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -340,6 +371,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_normal_look;
     private readonly InputAction m_normal_item_use;
     private readonly InputAction m_normal_menu;
+    private readonly InputAction m_normal_sprint;
     public struct NormalActions
     {
         private @PlayerControls m_Wrapper;
@@ -350,6 +382,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @look => m_Wrapper.m_normal_look;
         public InputAction @item_use => m_Wrapper.m_normal_item_use;
         public InputAction @menu => m_Wrapper.m_normal_menu;
+        public InputAction @sprint => m_Wrapper.m_normal_sprint;
         public InputActionMap Get() { return m_Wrapper.m_normal; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -377,6 +410,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @menu.started -= m_Wrapper.m_NormalActionsCallbackInterface.OnMenu;
                 @menu.performed -= m_Wrapper.m_NormalActionsCallbackInterface.OnMenu;
                 @menu.canceled -= m_Wrapper.m_NormalActionsCallbackInterface.OnMenu;
+                @sprint.started -= m_Wrapper.m_NormalActionsCallbackInterface.OnSprint;
+                @sprint.performed -= m_Wrapper.m_NormalActionsCallbackInterface.OnSprint;
+                @sprint.canceled -= m_Wrapper.m_NormalActionsCallbackInterface.OnSprint;
             }
             m_Wrapper.m_NormalActionsCallbackInterface = instance;
             if (instance != null)
@@ -399,6 +435,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @menu.started += instance.OnMenu;
                 @menu.performed += instance.OnMenu;
                 @menu.canceled += instance.OnMenu;
+                @sprint.started += instance.OnSprint;
+                @sprint.performed += instance.OnSprint;
+                @sprint.canceled += instance.OnSprint;
             }
         }
     }
@@ -429,5 +468,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnItem_use(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
+        void OnSprint(InputAction.CallbackContext context);
     }
 }

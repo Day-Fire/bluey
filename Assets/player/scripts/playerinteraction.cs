@@ -15,6 +15,8 @@ public class playerinteraction : MonoBehaviour
 
     public float interactiondistance;
     public TMPro.TextMeshProUGUI interactiontext;
+    private bool InteractionHold = false;
+    private Interactable HeldInteraction;
 
     private void Awake()
     {
@@ -43,6 +45,7 @@ public class playerinteraction : MonoBehaviour
 
         if (!succsesfulhit)
         {
+            /*
             if (movement.canroll)
             {
                 interactiontext.text = "roll";
@@ -52,6 +55,7 @@ public class playerinteraction : MonoBehaviour
                 movement.canWalk = true;
                 movement.roll();
             }
+            */
         }
     }
 
@@ -66,7 +70,6 @@ public class playerinteraction : MonoBehaviour
                 interactable.interact(gameObject);
                 break;
             default:
-                interactable.interact(gameObject);
                 Debug.LogError("interaction type not found");
                 break;
         }

@@ -6,35 +6,49 @@ using TMPro;
 
 public class ui_display : MonoBehaviour
 {
-    public static TextMeshProUGUI MainTextDisp;
-    public static GameObject UI;
+    private PlayerControls playercontrols;
+    public TextMeshProUGUI MainTextDisp;
+    public bool IsVisible;
+    public GameObject UI;
+    public int Page;
 
-    public void Start()
+    private void Awake()
     {
-        UI = GetComponentInChildren<RawImage>().gameObject;
-        MainTextDisp = GetComponentInChildren<TextMeshProUGUI>();
-        UI.SetActive(false);
+        playercontrols = new PlayerControls();
+        DontDestroyOnLoad(gameObject);
+    }
+
+    private void OnEnable()
+    {
+        playercontrols.Enable();
+    }
+
+    private void OnDisable()
+    {
+        playercontrols.Disable();
+    }
+
+    void Start()
+    {
+        playercontrols.normal.Action.performed += _ => interacttext();
     }
 
     //called by outside objects to display text
-    public static void displaytext(string text)
+    public void displaytext(string text)
     {
-        MainTextDisp.text = text;
-
-        UI.SetActive(true);
+        if (!IsVisible)
+        {
+            MainTextDisp.text = text;
+            IsVisible = true;
+        }
     }
 
-    public static void displaytextandopt(string text, string[] options)
+    //called internaly to get player interaction
+    void interacttext()
     {
-        MainTextDisp.text = text;
-
-        UI.SetActive(true);
-    }
-
-    public static void hidetext()
-    {
-        MainTextDisp.text = "";
-
-        UI.SetActive(false);
+        if (IsVisible)
+        {
+            IsVisible = false;
+        }
     }
 }
