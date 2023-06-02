@@ -281,6 +281,12 @@ public class thirdPersonMovement : MonoBehaviour
         }
     }
 
+    public PlayerState checkState()
+    {
+        return state;
+    }
+
+
     public bool hardSetState(PlayerState newState)
     {
         bool changed = false;
@@ -311,6 +317,21 @@ public class thirdPersonMovement : MonoBehaviour
             //Debug.Log("playerstate unchanged");
         }
     }
+
+    public bool standStill()
+    {
+        if (canChangeState)
+        {
+            //Debug.Log("STOPA");
+            hardSetState(PlayerState.idle);
+        }
+        else
+        {
+            canChangeState = true;
+        }
+        return true;
+    }
+
     private void check_ground()
     {
         isgrounded = Physics.CheckBox(groundpoint.position, groundpoint.lossyScale / 2, groundpoint.rotation, groundMask);
@@ -559,7 +580,7 @@ public class thirdPersonMovement : MonoBehaviour
                 keyarray[2] = false;
                 keyarray[3] = false;
 
-                Debug.Log(startspintime - Time.realtimeSinceStartup);
+                //Debug.Log(startspintime - Time.realtimeSinceStartup);
 
                 if (Mathf.Abs(Time.realtimeSinceStartup - startspintime) < limitspintime)
                 {

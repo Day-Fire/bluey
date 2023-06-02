@@ -21,4 +21,12 @@ public class FollowPoint : MonoBehaviour
             }
         }
     }
+    public void snap()
+    {
+        this.transform.position = pointToFollow.position;
+        if (Rotation)
+        {
+            this.transform.rotation = pointToFollow.rotation;
+        }
+    }
 }
