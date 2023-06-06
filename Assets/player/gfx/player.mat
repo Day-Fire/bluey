@@ -8,13 +8,14 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: player
-  m_Shader: {fileID: -6465566751694194690, guid: c350488c46eca614abcba61f85a94933, type: 3}
+  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
+  m_CustomRenderQueue: 2000
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -76,10 +77,6 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_283f44155b72466b961ea7d6b813c00f: 0
-    - Vector1_2926afef0f264ce79d7251ce9b16dc26: 1.9
-    - Vector1_7069ff688bca4111988479f097f606a1: 2.01
-    - Vector1_7c400df410c441ad91eb17a17b22734f: 1.32
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -109,8 +106,6 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_2496589ee777475eb8cd62a0f725cd1f: {r: 0.02745098, g: 0.4941176, b: 0.8392157, a: 0}
-    - Color_7007b250b24c44a9b9fec2cd91a54dc3: {r: 0, g: 0.026637096, b: 0.2264151, a: 1}
     - _BaseColor: {r: 0, g: 0.57013553, b: 1, a: 1}
     - _Color: {r: 0, g: 0.57013553, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0.11708651, b: 0.38053113, a: 1}

@@ -15,11 +15,6 @@ public class playerinteraction : MonoBehaviour
 
     public float interactiondistance;
     public TMPro.TextMeshProUGUI interactiontext;
-<<<<<<< Updated upstream
-=======
-    public bool InteractionHold = false;
-    private Interactable HeldInteraction;
->>>>>>> Stashed changes
 
     private void Awake()
     {
@@ -31,20 +26,7 @@ public class playerinteraction : MonoBehaviour
         RaycastHit hit;
         bool succsesfulhit = false;
 
-        if (!InteractionHold)
-        {
-            HeldInteraction = null;
-        }
-
-        if (InteractionHold)
-        {
-            if (playercontrols.actions["Action"].triggered)
-            {
-                //Debug.Log("bitch1" + HeldInteraction.name);
-                handleInteraction(HeldInteraction);
-            }
-        }
-        else if (Physics.Raycast(transform.position, transform.right * -1, out hit, interactiondistance))
+        if (Physics.Raycast(transform.position, transform.right * -1, out hit, interactiondistance))
         {
             Interactable interactable = hit.collider.GetComponent<Interactable>();
 
@@ -80,8 +62,6 @@ public class playerinteraction : MonoBehaviour
         switch (interactable.interactiontype)
         {
             case Interactable.InteractionType.Hold:
-                HeldInteraction = interactable;
-                InteractionHold = true;
                 interactable.interact(gameObject);
                 break;
             case Interactable.InteractionType.Read:

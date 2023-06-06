@@ -7,7 +7,7 @@ public class SignInteraction : Interactable
     private PlayerControls playercontrols;
     public InteractionType InteractionType = InteractionType.Read;
     public string text;
-    public GameObject DialougeManager;
+    public GameObject ui_display;
     public bool isactive = false;
     public thirdPersonMovement movement;
 
@@ -33,8 +33,11 @@ public class SignInteraction : Interactable
 
     public override void interact(GameObject player)
     {
-        ui_display distext = DialougeManager.GetComponent<ui_display>();
-        movement = player.GetComponent<thirdPersonMovement>();
+        ui_display distext = ui_display.GetComponent<ui_display>();
+        Debug.Log(player.GetComponent<thirdPersonMovement>());
+        {
+            movement = player.GetComponent<thirdPersonMovement>();
+        }
         if (!isactive)
         {
             distext.displaytext(text);
@@ -44,6 +47,6 @@ public class SignInteraction : Interactable
         {
             isactive = false;
         }
-        movement.standStill();
+       // movement.canWalk = !isactive;
     }
 }
