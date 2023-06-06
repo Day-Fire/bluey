@@ -18,8 +18,16 @@ public class holdableBox : Interactable
 
     public override void interact(GameObject player)
     {
-        holdS = player.GetComponent<Player_Hold>();
-        holdS.pickUp(gameObject);
+        col = this.GetComponent<Collider>();
+        Follow = this.GetComponent<FollowPoint>();
+        holdScript = player.GetComponent<Player_Hold>();
+        if (player.GetComponent<thirdPersonMovement>().changeState(thirdPersonMovement.PlayerState.hold))
+        {
+            holdScript.pickUp(gameObject);
+            isHeld = true;
+        }
+        col.enabled = !col.enabled;
+        Follow.pointToFollow = holdpoint;
     }
 
 }
