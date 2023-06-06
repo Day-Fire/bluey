@@ -15,8 +15,6 @@ public class playerinteraction : MonoBehaviour
 
     public float interactiondistance;
     public TMPro.TextMeshProUGUI interactiontext;
-    private bool InteractionHold = false;
-    private Interactable HeldInteraction;
 
     private void Awake()
     {
