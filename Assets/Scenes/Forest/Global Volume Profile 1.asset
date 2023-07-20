@@ -91,7 +91,6 @@ MonoBehaviour:
   - {fileID: 3931405872956023360}
   - {fileID: -7603581261331546407}
   - {fileID: -2587945599608339870}
-  - {fileID: 6133257043726978903}
 --- !u!114 &3931405872956023360
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -118,17 +117,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2194ff6544b8224438210172bb0f4908, type: 3}
+  m_Script: {fileID: 0}
   m_Name: CustomPostScreenTint
   m_EditorClassIdentifier: 
-  active: 1
-  m_AdvancedMode: 0
-  tintIntencity:
-    m_OverrideState: 0
-    m_Value: 1
-  tintColor:
-    m_OverrideState: 1
-    m_Value: {r: 0.7547908, g: 0, b: 1, a: 1}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1

@@ -9,7 +9,7 @@ public class Player_stats : MonoBehaviour
     //Health---
     [SerializeField]
     private int health = 3;
-    public healthAssign healthbar;
+    //public healthAssign healthbar;
 
     //Items---
     [SerializeField]
@@ -17,7 +17,7 @@ public class Player_stats : MonoBehaviour
 
     public Item Equip;
 
-    public RawImage Image;
+    //public RawImage Image;
 
     public double holdtime;
     public InputAction.CallbackContext startctx;
@@ -31,9 +31,9 @@ public class Player_stats : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        healthbar.setHealth(health);
+        //healthbar.setHealth(health);
 
-        Image.texture = Equip.icon;
+        //Image.texture = Equip.icon;
     }
 
     public void useItem(InputAction.CallbackContext context)

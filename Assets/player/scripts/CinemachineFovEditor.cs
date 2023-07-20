@@ -15,7 +15,7 @@ public class CinemachineFovEditor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Settings = GameObject.Find("Settings manager").GetComponent<SettingsManager>();
+        Settings = GameObject.Find("Settings Manager").GetComponent<SettingsManager>();
         cam = gameObject.GetComponent<CinemachineFreeLook>();
         cam.m_CommonLens = true;
         cam.m_Lens.FieldOfView = baseFOV;

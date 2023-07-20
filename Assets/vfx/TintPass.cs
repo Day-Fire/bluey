@@ -13,19 +13,20 @@ public class TintPass : ScriptableRenderPass
     private Material material;
     private Color tintColor;
     private float blurDistance;
+    private float cutoffDistance;
+    private float blurStrength;
     [Range(2, 20)]
-    public int kernelSize = 20;
+    public int kernelSize;
     [Range(1.0f, 18.0f)]
-    public float sharpness = 8;
+    public float sharpness;
     [Range(1.0f, 100.0f)]
-    public float hardness = 8;
-
+    public float hardness;
     [Range(0.01f, 2.0f)]
-    public float zeroCrossing = 0.58f;
+    public float zeroCrossing;
 
-    public bool useZeta = false;
+    public bool useZeta;
     [Range(0.01f, 3.0f)]
-    public float zeta = 1.0f;
+    public float zeta;
 
     public TintPass(TintRenderFeature.CustomPassSettings settings)
     {
@@ -40,17 +41,27 @@ public class TintPass : ScriptableRenderPass
         RenderTextureDescriptor descriptor = renderingData.cameraData.cameraTargetDescriptor;
         renderingData.cameraData.requiresDepthTexture = true;
 
-        tintColor = settings.tintcolor;
         blurDistance = settings.blurDistance;
+        blurStrength = settings.blurStrength;
+        cutoffDistance = settings.cutoffDistance;
+        kernelSize = settings.kernelSize;
+        sharpness = settings.sharpness;
+        hardness = settings.hardness;
+        zeroCrossing = settings.zeroCrossing;
+        useZeta = settings.useZeta;
+        zeta = settings.zeta;
 
-        material.SetVector("_TintColor", new Vector4(tintColor.r, tintColor.g, tintColor.b, tintColor.a));
+    material.SetVector("_TintColor", new Vector4(tintColor.r, tintColor.g, tintColor.b, tintColor.a));
         material.SetInt("_KernelSize", kernelSize);
         material.SetInt("_N", 8);
         material.SetFloat("_Q", sharpness);
         material.SetFloat("_Hardness", hardness);
         material.SetFloat("_ZeroCrossing", zeroCrossing);
         material.SetFloat("_Zeta", useZeta ? zeta : 2.0f / (kernelSize / 2.0f));
-        
+        material.SetFloat("_Strength", blurStrength);
+        material.SetFloat("_Depth", blurDistance);
+        material.SetFloat("_CutoffDistance", cutoffDistance);
+
         tintBuffer = new RenderTargetIdentifier(tintBufferID);
         cmd.GetTemporaryRT(tintBufferID, descriptor, FilterMode.Point);
     }

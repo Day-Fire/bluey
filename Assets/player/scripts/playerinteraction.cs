@@ -15,11 +15,10 @@ public class playerinteraction : MonoBehaviour
 
     public float interactiondistance;
     public TMPro.TextMeshProUGUI interactiontext;
-<<<<<<< Updated upstream
-=======
+
     public bool InteractionHold = false;
     private Interactable HeldInteraction;
->>>>>>> Stashed changes
+
 
     private void Awake()
     {
